@@ -11,7 +11,7 @@ config(['$routeProvider', function($routeProvider) {
   $routeProvider.otherwise({redirectTo: '/view1'});
 }]);
 
-var clientId = '106587098408-3eedm395hnoh8ge37dm7phvpspe3boso.apps.googleusercontent.com';
+var clientId = '106587098408-5m1kfgk8qchcrb4fr6ure33maqr3pg5f.apps.googleusercontent.com';
 
 if (!/^([0-9])$/.test(clientId[0])) {
   alert('Invalid Client ID - did you forget to insert your application Client ID?');
