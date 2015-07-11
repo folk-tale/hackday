@@ -8,3 +8,16 @@ this same document in a <a onclick="window.open(window.location.href);return fal
 <button id="auth_button">Authorize</button>
 <button id="prev">Previous</button>
 <button id="next">Next</button>
+
+<style>
+#draggable { width: 150px; height: 150px; padding: 0.5em; }
+</style>
+
+<script>
+$(function() {
+	$('#draggable').draggable();
+});
+</script>
+<div id="draggable" class="ui-widget-content">
+	<p> You can drag me! </p>
+</div>

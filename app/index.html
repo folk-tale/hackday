@@ -1,50 +1,229 @@
-<!DOCTYPE html>
-<!--[if lt IE 7]>      <html lang="en" ng-app="myApp" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html lang="en" ng-app="myApp" class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html lang="en" ng-app="myApp" class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html lang="en" ng-app="myApp" class="no-js"> <!--<![endif]-->
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>My AngularJS App</title>
-  <meta name="description" content="">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="bower_components/html5-boilerplate/dist/css/normalize.css">
-  <link rel="stylesheet" href="bower_components/html5-boilerplate/dist/css/main.css">
-  <link rel="stylesheet" href="app.css">
-  <!-- Load the Realtime JavaScript library -->
-  <script src="https://apis.google.com/js/api.js"></script>
 
-  <!-- Load the utility library -->
-  <script src="realtime-client-utils.js"></script>
-  <script src="bower_components/html5-boilerplate/dist/js/vendor/modernizr-2.8.3.min.js"></script>
+<html>
+  <head>
+    <title>JSON/Atom Custom Search API Example</title>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <style type="text/css">
+    html, body {
+      background: #F6F0E6;
+      font-family: Arial, sans-serif;
+      font-size: 14pt;
+    }
+    h5 {
+      margin-bottom: 0px;
+      text-transform: uppercase;
+      color: #666666;
+    }
+    hr {
+      height: 1px;
+      border: 0px;
+      margin: 2px 0px;
+      background: #999999;
+    }
+    .hidden {
+      display: none;
+    }
+    .result {
+      margin: 10px;
+      display: inline-block;
+      max-width: 100px;
+      max-height: 100px;
 
-  <script src="page.js"></script>
-</head>
-<body>
-  <ul class="menu">
-    <li><a href="#/view1">view1</a></li>
-    <li><a href="#/view2">view2</a></li>
-  </ul>
+      -moz-animation-name: grow;
+      -moz-animation-iteration-count: 1;
+      -moz-animation-timing-function: ease-in;
+      -moz-animation-duration: 0.3s;
 
-  <!--[if lt IE 7]>
-      <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-  <![endif]-->
+      -webkit-animation-name: grow;
+      -webkit-animation-iteration-count: 1;
+      -webkit-animation-timing-function: ease-in;
+      -webkit-animation-duration: 0.3s;
 
-  <div ng-view></div>
+      animation-name: grow;
+      animation-iteration-count: 1;
+      animation-timing-function: ease-in;
+      animation-duration: 0.2s;
+    }
+    .term {
+      margin-top: 5px;
+      margin-right: 5px;
+      padding: 5px;
+      display: inline-block;
+      background: #FFFFFF;
+      border: 1px solid #999999;
+      color: #999999;
+    }
+    #queryfield, 
+    #submitbutton {
+      padding: 5px;
+      font-size: 14pt;
+      height: 30pt;
+    }
+    @-moz-keyframes grow {
+        0% {
+            max-width: 0px;
+            max-height: 0px;
+        }
+        100% {
+            max-width: 100px;
+            max-height: 100px;
+        }
+    }
+    @-webkit-keyframes grow {
+        0% {
+            max-width: 0px;
+            max-height: 0px;
+        }
+        100% {
+            max-width: 100px;
+            max-height: 100px;
+        }
+    }
+    @keyframes grow {
+        0% {
+            max-width: 0px;
+            max-height: 0px;
+        }
+        100% {
+            max-width: 100px;
+            max-height: 100px;
+        }
+    }
+    #stage {
+      width: 100%;
+      height: 300px;
+      padding: 0.5em;
+      border: 1px solid #999999;
+    }
+    .img-wrapper {
+      display: inline-block;
+    }
+    </style>
+    <!-- Javascript NLP library. Not as robust as a server-side library but good enough. -->
+    <script src="https://rawgit.com/spencermountain/nlp_compromise/master/client_side/nlp.min.js"> </script>
 
-  <div>Angular seed app: v<span app-version></span></div>
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+  <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+  <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 
-  <!-- In production use:
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>
-  -->
-  <script src="bower_components/angular/angular.js"></script>
-  <script src="bower_components/angular-route/angular-route.js"></script>
-  <script src="app.js"></script>
-  <script src="view1/view1.js"></script>
-  <script src="view2/view2.js"></script>
-  <script src="components/version/version.js"></script>
-  <script src="components/version/version-directive.js"></script>
-  <script src="components/version/interpolate-filter.js"></script>
-</body>
+  </head>
+  <body>
+    <form action="javascript:searchAll()" accept-charset="utf-8">
+      <input type="text" id="queryfield" placeholder="Enter a sentence..." name="q"></input>
+      <input type="submit" id="submitbutton" value="Go"></input>
+    </form>
+    <h5>Nouns</h5>
+    <hr />
+    <div id="terms"></div>
+    <h5>Search results</h5>
+    <hr />
+    <div id="content"></div>
+
+    <div id="stage">stage</div>
+
+
+
+
+
+    <script>
+
+    $("#stage").droppable({
+      drop: function(event, ui) {
+        // If it's in the "content" bar, move it to the stage
+        if (ui.draggable.parent().is($('#content'))) {
+          var x = ui.draggable.position().left;
+          var y = ui.draggable.position().top;
+          document.getElementById("stage").appendChild(ui.draggable.get(0));
+          ui.draggable.css({position: 'absolute', left: x, top: y});
+          ui.draggable.hover(
+            function() {
+              // TODO: add code here for adding resize buttons
+              }, function() {
+              // TODO: add code here for removing the resizing buttons
+            });
+        }
+      }
+    });
+
+    
+
+      // For old Image Search API
+      function hndlr(response) {
+        for (var i = 0; i < response.responseData.results.length; i++) {
+          var item = response.responseData.results[i];
+          var img = document.createElement('img');
+          img.src = item.url;
+          img.className = "hidden";
+          img.onload = function() { this.className = "result"; }
+
+
+          document.getElementById("content").appendChild(img);
+          $('#content img').draggable({
+            revert: "invalid",
+            drag: function() {
+              // Send $(this).position() over the internet, or do an RPC
+            }
+          });
+
+
+        }
+      }
+      // For new Custom Search API
+      function hndlr2(response) {
+        for (var i = 0; i < response.items.length; i++) {
+          var item = response.items[i];
+          var img = document.createElement('img');
+          img.src = item.link;
+          img.className = "hidden";
+          img.onload = function() { this.className = "result"; }
+          document.getElementById("content").appendChild(img);
+        }
+      }
+    </script>
+    <script>
+      function searchNoun(noun) {
+        /* // Using new Custom Search API (can only filter by PNG or GIF)
+        var req = new XMLHttpRequest();
+        req.onreadystatechange = function() {
+            if (req.readyState == 4) {
+              hndlr(JSON.parse(req.responseText));
+              //hndlr2(JSON.parse(req.responseText));
+            }
+        }
+        var query = encodeURI(noun);
+        var reqURL = "https://www.googleapis.com/customsearch/v1?key=AIzaSyB_laO9ignQqxeCTOjRF5aYr1RvfdAWfME&cx=004787686795910839531%3Acf2pijgb3ra&searchType=image&fileType=png&imgType=clipart&imgc=trans&alt=json&q=" + query;
+        req.open("GET", reqURL);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.send();
+        document.getElementById("terms").innerHTML += "<span class=\"term\">" + noun + "</span>";
+        */
+
+        // Using old Image Search API (allows searching for transparent images)
+        var query = encodeURI(noun);
+        var reqURL = "http://ajax.googleapis.com/ajax/services/search/images?v=1.0&callback=hndlr&rsz=8&imgc=trans&imgsz=medium&q=" + query;
+        var script = document.createElement("script");
+        script.src = reqURL;
+        document.getElementById("content").appendChild(script);
+        document.getElementById("terms").innerHTML += "<span class=\"term\">" + noun + "</span>";
+      }
+    </script>
+    <script>
+      function searchAll() {
+        document.getElementById("content").innerHTML = "";
+        document.getElementById("terms").innerHTML = "";
+        var input = document.querySelector("#queryfield").value;
+        var nouns = nlp.pos(input).sentences[0].nouns();
+        for (var i = 0; i < nouns.length; i++) {
+          var noun = nouns[i];
+          if (noun.pos.tag.lastIndexOf("NNP", 0) === 0 || // Skip proper nouns
+              noun.pos.tag.lastIndexOf("PRP", 0) === 0 || // Skip pronouns
+              noun.pos.tag.lastIndexOf("WH", 0) === 0)    // Skip wh- pronouns
+          {
+            continue;
+          }
+          searchNoun(noun.text);
+        }
+      }
+    </script>
+  </body>
 </html>
