@@ -83,6 +83,7 @@ function registerTypes(model) {
     this.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, this.update);
   }
 
+  // This gets called when somebody else adds a prop
   Prop.prototype.onload = function() {
     if (!this.elem) {
       this.elem = document.getElementById(this.id);
@@ -92,7 +93,10 @@ function registerTypes(model) {
         this.elem.src = this.imageURL;
         this.elem.style.display = "inline-block";
         this.elem.style.position = "absolute";
-        document.body.appendChild(this.elem);
+        if (document.getElementById("stage")!==null)
+          document.getElementById("stage").appendChild(this.elem);
+        else
+          document.body.appendChild(this.elem);
       }
     }
     this.elem.style.top = this.startY;
@@ -117,6 +121,13 @@ function registerTypes(model) {
     this.lenY = height;
   }
 
+  Prop.prototype.delete = function() {
+    // ???
+  }
+
+  
+
+
   // Register prop class
   gapi.drive.realtime.custom.registerType(Prop, 'Prop');
   gapi.drive.realtime.custom.setInitializer(Prop, Prop.prototype.init);
@@ -138,4 +149,8 @@ function addProp(ide, stx, sty, width, height, url) {
   var prop = model.create(Prop, ide, stx, sty, width, height, url);
   model.getRoot().set(ide, prop);
   return prop;
+}
+
+function createPropFromElement(elem) {
+  return addProp(elem.id, elem.style.left, elem.style.top, node.style.width, node.style.height, node.src)
 }
