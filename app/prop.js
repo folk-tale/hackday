@@ -109,6 +109,14 @@ function registerTypes(model) {
     this.elem.style.height = this.lenY;
   }
 
+  Prop.prototype.sync = function(stx, sty, width, height) {
+    // Update properties from position on page
+    this.startY = stx;
+    this.startX = sty;
+    this.lenX = width;
+    this.lenY = height;
+  }
+
   // Register prop class
   gapi.drive.realtime.custom.registerType(Prop, 'Prop');
   gapi.drive.realtime.custom.setInitializer(Prop, Prop.prototype.init);
@@ -129,4 +137,5 @@ function registerTypes(model) {
 function addProp(ide, stx, sty, width, height, url) {
   var prop = model.create(Prop, ide, stx, sty, width, height, url);
   model.getRoot().set(ide, prop);
+  return prop;
 }
