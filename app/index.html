@@ -9,6 +9,7 @@
       font-family: Arial, sans-serif;
       font-size: 14pt;
     }
+
     h5 {
       margin-bottom: 0px;
       text-transform: uppercase;
@@ -44,6 +45,62 @@
       animation-timing-function: ease-in;
       animation-duration: 0.2s;
     }
+
+    @font-face {
+      font-family: Kiddish;
+      src: url(/app/fonts/Kiddish.ttf);
+    }
+
+    .container {
+      padding-top: 20px;
+      width: 80%;
+      height: 600px;
+      margin: auto;
+    }
+
+    .search-bar-container {
+      float: left;
+      width: 66%;
+    }
+
+    .search-input {
+      width: 80%;
+    }
+
+    .search-submit {
+      width: 18%;
+    }
+
+    .results-header {
+      width: 10%;
+    }
+
+    .results {
+      height: 100%;
+      overflow-y: auto;
+    }
+
+    .floatLeft {
+      float: left;
+    }
+    .floatRight {
+      float: right;
+    }
+
+    .backstage-container {
+      width:  30%;
+      float: right;
+    }
+
+    .stage-container {
+      float: left;
+      width: 66%;
+      height: 100%;
+      font-family: Kiddish;
+      font-size: 25px;
+      z-index: 950;
+    }
+
     .term {
       margin-top: 5px;
       margin-right: 5px;
@@ -91,10 +148,11 @@
     }
     #stage {
       width: 100%;
-      height: 300px;
+      height: 90%;
       padding: 0.5em;
       border: 1px solid #999999;
       position: relative;
+      z-index: 950;
     }
     #trash {
       width: 100px;
@@ -119,20 +177,31 @@
 
   </head>
   <body>
-    <form action="javascript:searchAll()" accept-charset="utf-8">
-      <input type="text" id="queryfield" placeholder="Enter a sentence..." name="q"></input>
-      <input type="submit" id="submitbutton" value="Go"></input>
-    </form>
-    <h5>Nouns</h5>
-    <hr />
-    <div id="terms"></div>
+    <div class="container">
+      <div class="search-bar-container">
+        <form action="javascript:searchAll()" accept-charset="utf-8">
+          <input type="text" class="search-input" id="queryfield" placeholder="Enter a sentence..." name="q"></input>
+          <input type="submit" class="search-submit" id="submitbutton" value="Go"></input>
+        </form>
+          <h5 class="results-header floatLeft">Nouns: </h5>
+          <div class="floatLeft" id="terms"></div>
+      </div>
 
-    <h5>Search results</h5>
-    <hr />
-    <div id="content"></div>
-    <div id="stage">stage</div>
+      <div class="backstage-container">
+        <h5>Search results</h5>
+        <hr />
+        <div class="results" id="content"></div>
+      </div>
+
+      <div class="stage-container">
+        <div id="stage">STAGE</div>
+      </div>
+
+    </div>
 
     <script>
+
+
 
     $("#stage").droppable({
       drop: function(event, ui) {
@@ -182,8 +251,12 @@
             revert: "invalid",
             drag: function() {
               // Send $(this).position() over the internet, or do an RPC
+              $('#content').css('overflow', 'visible');
             },
-            stack: "#stage img"
+            stack: "div",
+            stop: function() {
+              $('#content').css('overflow-y', 'auto');
+            }
           });
 
 
