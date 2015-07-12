@@ -89,6 +89,7 @@ function registerTypes(model) {
       this.elem = document.getElementById(this.id);
       if (!this.elem) {
         this.elem = makeDraggableElement(this.imageURL, this.id);
+        console.log("Made the element: " + this.elem);
 
         // this.elem = document.createElement("img");
         // this.elem.id = this.id;
@@ -102,14 +103,12 @@ function registerTypes(model) {
           document.getElementById("stage").appendChild(this.elem);
           $(this.elem).css({
             'position': 'absolute', 
-            'left': stx, 
-            'top': sty,
+            'left': this.startX, 
+            'top': this.startY,
           });
         }
         else
           document.body.appendChild(this.elem);
-
-          
 
         // Near-duplicate of what's in index.html - probably a good idea
         // to name these functions, define them once, and call them here.
@@ -123,7 +122,7 @@ function registerTypes(model) {
               $('.grow-button').remove();
               $('.shrink-button').remove();
           });
-
+        this.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, this.update);
       }
     }
     this.elem.style.top = this.startY;
@@ -132,21 +131,20 @@ function registerTypes(model) {
     this.elem.style.height = this.lenY;
   }
 
-  Prop.prototype.update = function() {
-    // Reposition element (this.elem) on the page
-    this.elem.style.top = this.startY;
-    this.elem.style.left = this.startX;
-    var $img = (this.elem).children('img');
+  Prop.prototype.update = function(event) {
+    var prop = event.target;
+    prop.elem.style.top = prop.startY;
+    prop.elem.style.left = prop.startX;
+    var $img = $(prop.elem).children('img');
 
     // So max-width/height doesn't squash it
-    if (this.lenX > $img.css('max-width'))
-      $img.css('max-width', this.lenX+"px");
-    if (this.lenY > $img.css('max-height'))
-      $img.css('max-height', this.lenY+"px");
+    if (!$img.css('max-width') || prop.lenX > $img.css('max-width'))
+      $img.css('max-width', prop.lenX+"px");
+    if (!$img.css('max-height') || prop.lenY > $img.css('max-height'))
+      $img.css('max-height', prop.lenY+"px");
 
-    $(this.elem).children('img').width(this.lenX);
-    $(this.elem).children('img').height(this.lenY);
-
+    $(prop.elem).children('img').width(prop.lenX);
+    $(prop.elem).children('img').height(prop.lenY);
   }
 
   Prop.prototype.sync = function(stx, sty, width, height) {
@@ -214,7 +212,12 @@ function addProp(ide, stx, sty, width, height, url) {
 }
 
 function createPropFromElement(elem) {
-  return addProp(elem.id, elem.style.left, elem.style.top, elem.style.width, elem.style.height, elem.src)
+  return addProp(elem.id, 
+    elem.style.left, 
+    elem.style.top, 
+    $(elem).children('img').width(), 
+    $(elem).children('img').height(), 
+    $(elem).children('img').attr('src'));
 }
 
 
@@ -260,6 +263,7 @@ function addGrowButton($imgWrapper) {
     });
 
     var propId = $imgWrapper.attr('id');
+    console.log(props);
     props[propId].sync(x, y, $img.width(), $img.height());
 
   });
