@@ -204,6 +204,14 @@ function makeDraggableElement(url, id) {
   $(div).draggable({
     revert: "invalid",
     drag: function() {
+      if (props[this.id]) {
+        // Might not work if first child is a button
+        props[this.id].sync(this.style.left, 
+          this.style.top, 
+          this.childNodes[0].style.width, 
+          this.childNodes[0].style.height);
+      }
+
       // Send $(this).position() over the internet, or do an RPC
       $('#content').css('overflow', 'visible');
     },
