@@ -194,6 +194,9 @@
         <h5>Search results</h5>
         <hr />
         <div class="results" id="content"></div>
+        <a onclick="window.open(window.location.href);return false;" target="_blank" href="#">new tab</a>
+        <button id="auth_button">Authorize</button>
+        <button id="test_button" class="visible">Test</button>
       </div>
 
       <div class="stage-container">
@@ -201,6 +204,9 @@
       </div>
 
     </div>
+      
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script src="realtime-client-utils.js"></script>
     <script src="prop.js"></script>
 
     <script>
