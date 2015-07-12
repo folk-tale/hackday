@@ -205,7 +205,7 @@
 
     <script>
 
-    var propMap = {}; // A hash from ids to Props
+    var props = {}; // A hash from ids to Props
 
     // Important semantic clarification:
     // Currently, searching locally creates draggable prop elements, but it
@@ -247,9 +247,6 @@
           addGrowButton($imgWrapper);
           addShrinkButton($imgWrapper);
           
-          // Now it needs to be synchronized, so we make it an official prop:
-          props[ui.draggable.id] = createPropFromElem(ui.draggable);
-
           ui.draggable.hover(
             function() {
               if ($(this).parent().is($('#stage'))) {
@@ -260,6 +257,10 @@
               $('.grow-button').remove();
               $('.shrink-button').remove();
           });
+
+          // Now it needs to be synchronized, so we make it an official prop:
+          props[ui.draggable.id] = createPropFromElement(ui.draggable.get(0));
+
         }
       }
     });
@@ -298,110 +299,14 @@
       }
     });
 
-    // Only shows up locally, so it's not in Prop.js
-    function addGrowButton($imgWrapper) {
-
-      var growButton = document.createElement('button');
-      growButton.className = "grow-button";
-      growButton.innerHTML = "+";
-      $imgWrapper.append(growButton);
-      $(growButton).css({position: 'absolute', left: 10, top: 10});
-
-      // Grow button click callback - increases it 
-      $(growButton).click(function(event) {
-
-        var scaleFactor = 1.5;
-        var $img = $(this).siblings('img');
-        var aspectRatio = $img.width()*1.0/$img.height();
-        console.log("Aspect ratio: " + aspectRatio);
-
-
-        $img.width($img.width()*scaleFactor);
-        $img.height($img.height()*scaleFactor); 
-
-        // Updating max size based on position (and aspect ratio)
-        var absoluteMaxWidth = $("#stage").width() - $(this).parent().position().left;
-        var absoluteMaxHeight = $("#stage").height() - $(this).parent().position().top;
-        
-        var scaledMaxWidth = absoluteMaxHeight * aspectRatio;
-        var newMaxWidth = Math.min(absoluteMaxWidth, scaledMaxWidth);
-
-        var scaledMaxHeight = newMaxWidth / aspectRatio;
-        var newMaxHeight = Math.min(absoluteMaxHeight, scaledMaxHeight);
-
-        $img.css({
-          'max-width': newMaxWidth + "px",
-          'max-height': newMaxHeight + "px"
-        });
-      });
-    }
-
-    // Only shows up locally, so it's not in Prop.js
-    function addShrinkButton($imgWrapper) {
-      var shrinkButton = document.createElement('button');
-      shrinkButton.className = "shrink-button";
-      shrinkButton.innerHTML = "-";
-      $imgWrapper.append(shrinkButton);
-      $(shrinkButton).css({position: 'absolute', left: 35, top: 10});
-
-      // Grow button click callback - increases it 
-      $(shrinkButton).click(function(event) {
-
-        var scaleFactor = 0.67;
-        var $img = $(this).siblings('img');
-        var aspectRatio = $img.width()*1.0/$img.height();
-
-        $img.width($img.width()*scaleFactor);
-        $img.height($img.height()*scaleFactor); 
-
-        // Updating max size based on position (and aspect ratio)
-        var absoluteMaxWidth = $("#stage").width() - $(this).parent().position().left;
-        var absoluteMaxHeight = $("#stage").height() - $(this).parent().position().top;
-        
-        var scaledMaxWidth = absoluteMaxHeight * aspectRatio;
-        var newMaxWidth = Math.min(absoluteMaxWidth, scaledMaxWidth);
-
-        var scaledMaxHeight = newMaxWidth / aspectRatio;
-        var newMaxHeight = Math.min(absoluteMaxHeight, scaledMaxHeight);
-
-        $img.css({
-          'max-width': newMaxWidth + "px",
-          'max-height': newMaxHeight + "px"
-        });
-      });
-    }
-      function makePropElement(url, id) {
-        var img = document.createElement('img');
-        img.src = url;
-        img.className = "hidden";
-        img.onload = function() { this.className = "result"; }
-
-        var div = document.createElement('div');
-        div.className = "img-wrapper";
-        div.id = id;
-
-        div.appendChild(img);
-
-        $(div).draggable({
-          revert: "invalid",
-          drag: function() {
-            // Send $(this).position() over the internet, or do an RPC
-            $('#content').css('overflow', 'visible');
-          },
-          stack: "div", // #stage div?
-          stop: function() {
-            $('#content').css('overflow-y', 'auto');
-          }
-        });
-        return div;
-      }
+  
 
       // For old Image Search API (we actually use this, though)
       function hndlr(response) {
         for (var i = 0; i < response.responseData.results.length; i++) {
           var item = response.responseData.results[i];
           var id = "i"+Math.random();
-          var propDiv = makePropElement(item.url, id);
+          var propDiv = makeDraggableElement(item.url, id);
           document.getElementById("content").appendChild(propDiv);
         }
       }

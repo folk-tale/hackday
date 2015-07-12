@@ -88,18 +88,42 @@ function registerTypes(model) {
     if (!this.elem) {
       this.elem = document.getElementById(this.id);
       if (!this.elem) {
-        this.elem = document.createElement("img");
-        this.elem.id = this.id;
-        this.elem.src = this.imageURL;
-        this.elem.style.display = "inline-block";
-        this.elem.style.position = "absolute";
+        this.elem = makeDraggableElement(this.imageURL, this.id);
+
+        // this.elem = document.createElement("img");
+        // this.elem.id = this.id;
+        // this.elem.src = this.imageURL;
+        // this.elem.style.display = "inline-block";
+        // this.elem.style.position = "absolute";
 
         // An alternative to this casework is to have it get the
         // parentNode of the element in createPropFromElement
-        if (document.getElementById("stage")!==null)
+        if (document.getElementById("stage")!==null) {
           document.getElementById("stage").appendChild(this.elem);
+          $(this.elem).css({
+            'position': 'absolute', 
+            'left': stx, 
+            'top': sty,
+          });
+        }
         else
           document.body.appendChild(this.elem);
+
+          
+
+        // Near-duplicate of what's in index.html - probably a good idea
+        // to name these functions, define them once, and call them here.
+        $(this.elem).hover(
+            function() {
+              if ($(this).parent().is($('#stage'))) {
+                addGrowButton($(this));
+                addShrinkButton($(this));
+              }
+            },function() {
+              $('.grow-button').remove();
+              $('.shrink-button').remove();
+          });
+
       }
     }
     this.elem.style.top = this.startY;
@@ -112,8 +136,17 @@ function registerTypes(model) {
     // Reposition element (this.elem) on the page
     this.elem.style.top = this.startY;
     this.elem.style.left = this.startX;
-    this.elem.style.width = this.lenX;
-    this.elem.style.height = this.lenY;
+    var $img = (this.elem).children('img');
+
+    // So max-width/height doesn't squash it
+    if (this.lenX > $img.css('max-width'))
+      $img.css('max-width', this.lenX+"px");
+    if (this.lenY > $img.css('max-height'))
+      $img.css('max-height', this.lenY+"px");
+
+    $(this.elem).children('img').width(this.lenX);
+    $(this.elem).children('img').height(this.lenY);
+
   }
 
   Prop.prototype.sync = function(stx, sty, width, height) {
@@ -148,6 +181,32 @@ function registerTypes(model) {
  * height (string) - height of the prop
  * url (string) - image URL for the prop
  */
+
+function makeDraggableElement(url, id) {
+  var img = document.createElement('img');
+  img.src = url;
+  img.className = "hidden";
+  img.onload = function() { this.className = "result"; }
+
+  var div = document.createElement('div');
+  div.className = "img-wrapper";
+  div.id = id;
+
+  div.appendChild(img);
+
+  $(div).draggable({
+    revert: "invalid",
+    drag: function() {
+      // Send $(this).position() over the internet, or do an RPC
+      $('#content').css('overflow', 'visible');
+    },
+    stack: "div", // #stage div?
+    stop: function() {
+      $('#content').css('overflow-y', 'auto');
+    }
+  });
+  return div;
+}
 function addProp(ide, stx, sty, width, height, url) {
   var prop = model.create(Prop, ide, stx, sty, width, height, url);
   model.getRoot().set(ide, prop);
@@ -155,5 +214,80 @@ function addProp(ide, stx, sty, width, height, url) {
 }
 
 function createPropFromElement(elem) {
-  return addProp(elem.id, elem.style.left, elem.style.top, node.style.width, node.style.height, node.src)
+  return addProp(elem.id, elem.style.left, elem.style.top, elem.style.width, elem.style.height, elem.src)
+}
+
+
+function addGrowButton($imgWrapper) {
+
+  var growButton = document.createElement('button');
+  growButton.className = "grow-button";
+  growButton.innerHTML = "+";
+  $imgWrapper.append(growButton);
+  $(growButton).css({position: 'absolute', left: 10, top: 10});
+
+  // Grow button click callback - increases it 
+  $(growButton).click(function(event) {
+
+    $imgWrapper = $(this).parent();
+    var scaleFactor = 1.5;
+    var $img = $(this).siblings('img');
+    var aspectRatio = $img.width()*1.0/$img.height();
+    console.log("Aspect ratio: " + aspectRatio);
+
+
+    $img.width($img.width()*scaleFactor);
+    $img.height($img.height()*scaleFactor); 
+
+    // Updating max size based on position (and aspect ratio)
+    var x = $imgWrapper.position().left;
+    var y = $imgWrapper.position().top;
+
+    // Probably semantically cleaner to move this max-width/height 
+    // code to the draw function
+    var absoluteMaxWidth = $("#stage").width() - x;
+    var absoluteMaxHeight = $("#stage").height() - y;
+    
+    var scaledMaxWidth = absoluteMaxHeight * aspectRatio;
+    var newMaxWidth = Math.min(absoluteMaxWidth, scaledMaxWidth);
+
+    var scaledMaxHeight = newMaxWidth / aspectRatio;
+    var newMaxHeight = Math.min(absoluteMaxHeight, scaledMaxHeight);
+
+    $img.css({
+      'max-width': newMaxWidth + "px",
+      'max-height': newMaxHeight + "px"
+    });
+
+    var propId = $imgWrapper.attr('id');
+    props[propId].sync(x, y, $img.width(), $img.height());
+
+  });
+}
+
+function addShrinkButton($imgWrapper) {
+  var shrinkButton = document.createElement('button');
+  shrinkButton.className = "shrink-button";
+  shrinkButton.innerHTML = "-";
+  $imgWrapper.append(shrinkButton);
+  $(shrinkButton).css({position: 'absolute', left: 35, top: 10});
+
+  // Grow button click callback - increases it 
+  $(shrinkButton).click(function(event) {
+
+    var scaleFactor = 0.67;
+    var $img = $(this).siblings('img');
+    var aspectRatio = $img.width()*1.0/$img.height();
+
+    $img.width($img.width()*scaleFactor);
+    $img.height($img.height()*scaleFactor); 
+    
+    var propId = $(this).parent().attr('id');
+    props[propId].sync(
+      $(this).parent().position().left, 
+      $(this).parent().position().right,
+      $img.width(), 
+      $img.height());
+
+  });
 }
