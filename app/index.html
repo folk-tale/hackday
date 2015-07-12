@@ -116,6 +116,9 @@
       font-size: 14pt;
       height: 30pt;
     }
+    #submitbutton {
+      float: right;
+    }
     @-moz-keyframes grow {
         0% {
             max-width: 0px;
@@ -153,6 +156,8 @@
       border: 1px solid #999999;
       position: relative;
       z-index: 950;
+      background: #FBFBFB;
+      box-sizing: border-box;
     }
     #trash {
       width: 100px;
@@ -184,7 +189,7 @@
       <div class="search-bar-container">
         <form action="javascript:searchAll()" accept-charset="utf-8">
           <input type="text" class="search-input" id="queryfield" placeholder="Enter a sentence..." name="q"></input>
-          <input type="submit" class="search-submit" id="submitbutton" value="Go"></input>
+          <button type="submit" class="search-submit" id="submitbutton">Go</button>
         </form>
           <h5 class="results-header floatLeft">Nouns: </h5>
           <div class="floatLeft" id="terms"></div>
