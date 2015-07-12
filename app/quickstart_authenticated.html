@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Google Realtime Quickstart</title>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+
+    <!-- Load Styles -->
+    <link href="https://www.gstatic.com/realtime/quickstart-styles.css" rel="stylesheet" type="text/css"/>
+
+    <!-- Load the Realtime JavaScript library -->
+    <script src="https://apis.google.com/js/api.js"></script>
+
+    <!-- Load the utility library -->
+    <script src="https://www.gstatic.com/realtime/realtime-client-utils.js"></script>
+  </head>
+  <body>
+    <main>
+      <h1>Magic Cat</h1>
+      <a onclick="window.open(window.location.href);return false;" target="_blank">new tab</a>
+      <button id="auth_button">Authorize</button>
+      <button id="test_button" class="visible">Test</button>
+    </main>
+    <script src="prop.js"></script>
+    <script>
+    // Testing
+    document.getElementById('test_button').addEventListener('click', function(){
+      baz = addProp("test", "10px", "10px", "100px", "100px", 
+                    "http://emojipedia.org/wp-content/uploads/2014/04/1f408-google-android.png");
+    });
+    </script>
+  </body>
+</html>
