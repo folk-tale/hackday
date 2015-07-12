@@ -75,6 +75,8 @@ function registerTypes(model) {
 
   Prop.prototype.init = function(ide, stx, sty, width, height, url) {
     this.id = ide;
+    if (document.getElementById(this.id))
+      this.elem = document.getElementById(this.id);
     this.startX = stx;
     this.startY = sty;
     this.lenX = width;
@@ -122,6 +124,7 @@ function registerTypes(model) {
               $('.grow-button').remove();
               $('.shrink-button').remove();
           });
+        props[this.id] = this;
         this.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, this.update);
       }
     }
@@ -129,12 +132,18 @@ function registerTypes(model) {
     this.elem.style.left = this.startX;
     this.elem.style.width = this.lenX;
     this.elem.style.height = this.lenY;
+    $(this.elem).children('img').width(this.lenX);
+    $(this.elem).children('img').height(this.lenY);
   }
 
   Prop.prototype.update = function(event) {
     var prop = event.target;
-    prop.elem.style.top = prop.startY;
     prop.elem.style.left = prop.startX;
+    prop.elem.style.top = prop.startY;
+
+    console.log("Left: " + prop.elem.style.left 
+      + ", top: " + prop.elem.style.top);
+    //prop.elem.style.left = prop.startX;
     var $img = $(prop.elem).children('img');
 
     // So max-width/height doesn't squash it
@@ -149,8 +158,8 @@ function registerTypes(model) {
 
   Prop.prototype.sync = function(stx, sty, width, height) {
     // Update properties from position on page
-    this.startY = stx;
-    this.startX = sty;
+    this.startX = stx;
+    this.startY = sty;
     this.lenX = width;
     this.lenY = height;
   }
@@ -215,9 +224,12 @@ function createPropFromElement(elem) {
   return addProp(elem.id, 
     elem.style.left, 
     elem.style.top, 
-    $(elem).children('img').width(), 
-    $(elem).children('img').height(), 
-    $(elem).children('img').attr('src'));
+    elem.childNodes[0].style.width,
+    elem.childNodes[0].style.height,
+    elem.childNodes[0].src);
+    //$(elem).children('img').width(), 
+    //$(elem).children('img').height(), 
+    //$(elem).children('img').attr('src'));
 }
 
 
@@ -232,6 +244,8 @@ function addGrowButton($imgWrapper) {
   // Grow button click callback - increases it 
   $(growButton).click(function(event) {
 
+    console.log("Original Left: " + $imgWrapper.get(0).style.left 
+      + ", top: " + $imgWrapper.get(0).style.top);
     $imgWrapper = $(this).parent();
     var scaleFactor = 1.5;
     var $img = $(this).siblings('img');
@@ -245,6 +259,10 @@ function addGrowButton($imgWrapper) {
     // Updating max size based on position (and aspect ratio)
     var x = $imgWrapper.position().left;
     var y = $imgWrapper.position().top;
+
+    console.log("X: " + x + ", y: " + y);
+    console.log("Left: " + $imgWrapper.get(0).style.left 
+      + ", top: " + $imgWrapper.get(0).style.top);
 
     // Probably semantically cleaner to move this max-width/height 
     // code to the draw function
@@ -289,7 +307,7 @@ function addShrinkButton($imgWrapper) {
     var propId = $(this).parent().attr('id');
     props[propId].sync(
       $(this).parent().position().left, 
-      $(this).parent().position().right,
+      $(this).parent().position().top,
       $img.width(), 
       $img.height());
 
