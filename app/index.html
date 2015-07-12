@@ -229,6 +229,7 @@
           var stageX = $(this).position().left;
           var stageY = $(this).position().top;
           document.getElementById("stage").appendChild($imgWrapper.get(0));
+
           $imgWrapper.css({
             'position': 'absolute', 
             'left': imgX-stageX, 
@@ -369,7 +370,7 @@
         });
       });
     }
-      function makePropElement(url, id = "i"+Math.random()) {
+      function makePropElement(url, id) {
         var img = document.createElement('img');
         img.src = url;
         img.className = "hidden";
@@ -399,7 +400,8 @@
       function hndlr(response) {
         for (var i = 0; i < response.responseData.results.length; i++) {
           var item = response.responseData.results[i];
-          var propDiv = makePropElement(item.url);
+          var id = "i"+Math.random();
+          var propDiv = makePropElement(item.url, id);
           document.getElementById("content").appendChild(propDiv);
         }
       }

@@ -93,6 +93,9 @@ function registerTypes(model) {
         this.elem.src = this.imageURL;
         this.elem.style.display = "inline-block";
         this.elem.style.position = "absolute";
+
+        // An alternative to this casework is to have it get the
+        // parentNode of the element in createPropFromElement
         if (document.getElementById("stage")!==null)
           document.getElementById("stage").appendChild(this.elem);
         else
