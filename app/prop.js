@@ -1,4 +1,4 @@
-var clientId = '355588130388-q160ev44v09s1h2ka76fun7k1cj8ptat.apps.googleusercontent.com';
+var clientId = '324627207270-ojamt80hdehm8dkup55o8cih0ag4d5j8.apps.googleusercontent.com';
 
 if (!/^([0-9])$/.test(clientId[0])) {
   alert('Invalid Client ID - did you forget to insert your application Client ID?');
