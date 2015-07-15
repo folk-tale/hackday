@@ -11,7 +11,7 @@ function hndlr(response) {
 // Using old Image Search API (allows searching for transparent images)
 function searchNoun(noun) {
   var query = encodeURI(noun);
-  var reqURL = "http://ajax.googleapis.com/ajax/services/search/images?v=1.0&callback=hndlr&rsz=8&imgc=trans&imgsz=medium&safe=active&q=" + query;
+  var reqURL = "https://ajax.googleapis.com/ajax/services/search/images?v=1.0&callback=hndlr&rsz=8&imgc=trans&imgsz=medium&safe=active&q=" + query;
   var script = document.createElement("script");
   script.src = reqURL;
   document.getElementById("content").appendChild(script);
