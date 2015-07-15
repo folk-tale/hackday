@@ -149,55 +149,57 @@
             max-height: 100px;
         }
     }
+    
     #stage-inner {
       width: 100%;
       height: 90%;
-      padding: 0.5em;
+      /*padding: 0.5em;*/
       border: 1px solid #999999;
       position: relative;
       z-index: 950;
       background: #FBFBFB;
       box-sizing: border-box;
+      overflow: hidden;
     }
+
     #stage {
       width: 100%;
       height: 90%;
       position: absolute;
     }
+
     #trash {
       width: 100px;
       height: 100px;
       border: 1px solid #999999;
     }
+
     #grow-button {
       width: 100px;
       height: 100px;
       color: #009900;
       position: absolute;
     }
+
     .img-wrapper {
       display: inline-block;
-      z-index: 1000;
     }
 
     #next-stage, #prev-stage {
       text-decoration: none;
-      position: relative;
+      position: absolute;
       top: 50%;
       font-size: 100px;
       transform: translateY(-50%);
       color: gray;
     }
+
     #next-stage {
-      float: right;
-      
-    }
-    #prev-stage {
-      left:5px;
+      right: 5px;
     }
 
-    #bg-img {
-      position: absolute;
+    #prev-stage {
+      left:5px;
     }
 
     #bg-img.hamburger{
@@ -210,73 +212,6 @@
       position: absolute;
     }
 
-
-  .button {
-    background: -webkit-linear-gradient(top,#008dfd 0,#0370ea 100%);
-    border: 1px solid #076bd2;
-    border-radius: 3px;
-    color: #fff;
-    display: none;
-    font-size: 13px;
-    font-weight: bold;
-    line-height: 1.3;
-    padding: 8px 25px;
-    text-align: center;
-    text-shadow: 1px 1px 1px #076bd2;
-    letter-spacing: normal;
-  }
-  .center {
-    padding: 10px;
-    text-align: center;
-    visibility: none;
-  }
-  .final {
-    color: black;
-    padding-right: 3px; 
-  }
-  .interim {
-    color: gray;
-  }
-  .info {
-    font-size: 14px;
-    text-align: center;
-    color: #777;
-    display: none;
-  }
-  .right {
-    float: right;
-  }
-  .sidebyside {
-    display: inline-block;
-    width: 45%;
-    min-height: 40px;
-    text-align: left;
-    vertical-align: top;
-  }
-  #headline {
-    font-size: 40px;
-    font-weight: 300;
-  }
-  #info {
-    font-size: 20px;
-    text-align: center;
-    color: #777;
-    visibility: hidden;
-  }
-  #results {
-    font-size: 14px;
-    font-weight: bold;
-    border: 1px solid #ddd;
-    padding: 15px;
-    text-align: left;
-    min-height: 50px;
-  }
-  #start_button {
-    border: 0;
-    background-color:transparent;
-    padding: 0;
-  }
-
     </style>
     <!-- Javascript NLP library. Not as robust as a server-side library but good enough. -->
     <script src="https://rawgit.com/spencermountain/nlp_compromise/master/client_side/nlp.min.js"> </script>
@@ -285,69 +220,19 @@
   <script src="//code.jquery.com/jquery-1.10.2.js"></script>
   <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
   <!-- See http://jqueryui.com/draggable/ for examples and API -->
+  <script src="photopicker.js"></script>    
+  <script type="text/javascript" src="https://apis.google.com/js/api.js?onload=onApiLoad"></script>
+
 
 
   </head>
   <body>
-    <h1 class="center" id="headline">
-      <a href="http://dvcs.w3.org/hg/speech-api/raw-file/tip/speechapi.html">
-    <div id="info">
-      <p id="info_start">Click on the microphone icon and begin speaking.</p>
-      <p id="info_speak_now">Speak now.</p>
-      <p id="info_no_speech">No speech was detected. You may need to adjust your
-        <a href="//support.google.com/chrome/bin/answer.py?hl=en&amp;answer=1407892">
-          microphone settings</a>.</p>
-      <p id="info_no_microphone" style="display:none">
-        No microphone was found. Ensure that a microphone is installed and that
-        <a href="//support.google.com/chrome/bin/answer.py?hl=en&amp;answer=1407892">
-        microphone settings</a> are configured correctly.</p>
-      <p id="info_allow">Click the "Allow" button above to enable your microphone.</p>
-      <p id="info_denied">Permission to use microphone was denied.</p>
-      <p id="info_blocked">Permission to use microphone is blocked. To change,
-        go to chrome://settings/contentExceptions#media-stream</p>
-      <p id="info_upgrade">Web Speech API is not supported by this browser.
-         Upgrade to <a href="//www.google.com/chrome">Chrome</a>
-         version 25 or later.</p>
-    </div>
-    <div class="right">
-      <button id="start_button" onclick="startButton(event)">
-        <img id="start_img" src="mic.gif" alt="Start"></button>
-    </div>
-    <div id="results">
-      <span id="final_span" class="final"></span>
-      <span id="interim_span" class="interim"></span>
-      <p>
-    </div>
-      <div class="center">
-      <div class="sidebyside" style="text-align:right">
-        <button id="copy_button" class="button" onclick="copyButton()">
-          Copy and Paste</button>
-        <div id="copy_info" class="info">
-          Press Control-C to copy text.<br>(Command-C on Mac.)
-        </div>
-      </div>
-     <div class="sidebyside">
-        <button id="email_button" class="button" onclick="emailButton()">
-          Create Email</button>
-        <div id="email_info" class="info">
-          Text sent to default email application.<br>
-          (See chrome://settings/handlers to change.)
-        </div>
-      </div>
-    </div>
-
-    <div id="div_language">
-        <select id="select_language" onchange="updateCountry()"></select>
-        &nbsp;&nbsp;
-        <select id="select_dialect"></select>
-      </div> 
-
     <div class="container">
       <div class="search-bar-container">
-        <!-- <form action="javascript:searchAll()" accept-charset="utf-8">
+        <form action="javascript:searchAll()" accept-charset="utf-8">
           <input type="text" class="search-input" id="queryfield" placeholder="Enter a sentence..." name="q"></input>
           <button type="submit" class="search-submit" id="submitbutton">Go</button>
-        </form> -->
+        </form>
           <h5 class="results-header floatLeft">Nouns: </h5>
           <div class="floatLeft" id="terms"></div>
       </div>
@@ -362,8 +247,9 @@
       </div>
 
       <div class="stage-container">
-
+        <button onclick="pickRandomImage()">Click me</button>
         <div id="stage-inner">
+          <img id="bg-img" src="" >
           <a href="#" onclick="return false" id="prev-stage">&lsaquo;</a>
           <a href="#" onclick="return false" id="next-stage">&rsaquo;</a>
           <div id="stage"></div>
@@ -375,8 +261,7 @@
     <script src="https://apis.google.com/js/api.js"></script>
     <script src="realtime-client-utils.js"></script>
     <script src="prop.js"></script>
-    <script src="https://rawgit.com/spencermountain/nlp_compromise/master/client_side/nlp.min.js"> </script>
-    <script src="speech.js"></script>
+
     <script>
 
     var props = {}; // A hash from ids to Props
@@ -479,9 +364,7 @@
 
       // For old Image Search API (we actually use this, though)
       function hndlr(response) {
-        //var length = response.responseData.results.length;
-        var length = 1;
-        for (var i = 0; i < length; i++) {
+        for (var i = 0; i < response.responseData.results.length; i++) {
           var item = response.responseData.results[i];
           var id = "i"+Math.random();
           var propDiv = makeDraggableElement(item.url, id);
@@ -531,8 +414,7 @@
       function searchAll() {
         document.getElementById("content").innerHTML = "";
         document.getElementById("terms").innerHTML = "";
-        //var input = document.querySelector("#queryfield").value;
-        var input = document.getElementById("final_span").innerHTML;
+        var input = document.querySelector("#queryfield").value;
         var nouns = nlp.pos(input).sentences[0].nouns();
         for (var i = 0; i < nouns.length; i++) {
           var noun = nouns[i];
