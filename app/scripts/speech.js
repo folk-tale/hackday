@@ -135,7 +135,7 @@ if (!('webkitSpeechRecognition' in window)) {
     if (window.getSelection) {
       window.getSelection().removeAllRanges();
       var range = document.createRange();
-      range.selectNode(document.getElementById('final_span'));
+      range.selectNode(document.getElementById('queryfield'));
       window.getSelection().addRange(range);
     }
     if (create_email) {
@@ -154,7 +154,7 @@ if (!('webkitSpeechRecognition' in window)) {
       }
     }
     final_transcript = capitalize(final_transcript);
-    final_span.innerHTML = linebreak(final_transcript);
+    queryfield.value = linebreak(final_transcript);
     interim_span.innerHTML = linebreak(interim_transcript);
     if (final_transcript || interim_transcript) {
       //showButtons('inline-block');
@@ -222,7 +222,7 @@ function startButton(event) {
   recognition.lang = select_dialect.value;
   recognition.start();
   ignore_onend = false;
-  final_span.innerHTML = '';
+  queryfield.value = '';
   interim_span.innerHTML = '';
   start_img.src = 'mic-slash.gif';
   showInfo('info_allow');
