@@ -68,7 +68,6 @@ for (var i = 0; i < langs.length; i++) {
 select_language.selectedIndex = 6;
 updateCountry();
 select_dialect.selectedIndex = 6;
-showInfo('info_start');
 
 function updateCountry() {
   for (var i = select_dialect.options.length - 1; i >= 0; i--) {
@@ -96,26 +95,25 @@ if (!('webkitSpeechRecognition' in window)) {
 
   recognition.onstart = function() {
     recognizing = true;
-    showInfo('info_speak_now');
-    start_img.src = 'mic-animate.gif';
+    start_img.src = 'images/mic-animate.gif';
   };
 
   recognition.onerror = function(event) {
     if (event.error == 'no-speech') {
-      start_img.src = 'mic.gif';
-      showInfo('info_no_speech');
+      start_img.src = 'images/mic.gif';
+      alert('No speech was detected. You may need to adjust your microphone settings');
       ignore_onend = true;
     }
     if (event.error == 'audio-capture') {
-      start_img.src = 'mic.gif';
-      showInfo('info_no_microphone');
+      start_img.src = 'images/mic.gif';
+      alert('No microphone was found. Ensure that a microphone is installed and that microphone settingsare configured correctly if you would like to use voice input.');
       ignore_onend = true;
     }
     if (event.error == 'not-allowed') {
       if (event.timeStamp - start_timestamp < 100) {
-        showInfo('info_blocked');
+        alert('Permission to use microphone is blocked. To change, go to chrome://settings/contentExceptions#media-stream');
       } else {
-        showInfo('info_denied');
+        alert('Permission to use microphone was denied.');
       }
       ignore_onend = true;
     }
@@ -126,12 +124,10 @@ if (!('webkitSpeechRecognition' in window)) {
     if (ignore_onend) {
       return;
     }
-    start_img.src = 'mic.gif';
+    start_img.src = 'images/mic.gif';
     if (!final_transcript) {
-      showInfo('info_start');
       return;
     }
-    showInfo('');
     if (window.getSelection) {
       window.getSelection().removeAllRanges();
       var range = document.createRange();
@@ -166,7 +162,7 @@ if (!('webkitSpeechRecognition' in window)) {
 
 function upgrade() {
   start_button.style.visibility = 'hidden';
-  showInfo('info_upgrade');
+  alert('Web Speech API is not supported by this browser. Upgrade to Chrome version 25 or later if you would like to use voice input.');
 }
 
 var two_line = /\n\n/g;
@@ -197,7 +193,6 @@ function copyButton() {
   }
   copy_button.style.display = 'none';
   copy_info.style.display = 'inline-block';
-  showInfo('');
 }
 
 function emailButton() {
@@ -210,7 +205,6 @@ function emailButton() {
   }
   email_button.style.display = 'none';
   email_info.style.display = 'inline-block';
-  showInfo('');
 }
 
 function startButton(event) {
@@ -224,23 +218,9 @@ function startButton(event) {
   ignore_onend = false;
   queryfield.value = '';
   interim_span.innerHTML = '';
-  start_img.src = 'mic-slash.gif';
-  showInfo('info_allow');
+  start_img.src = 'images/mic-slash.gif';
   showButtons('none');
   start_timestamp = event.timeStamp;
-}
-
-function showInfo(s) {
-  if (s) {
-    for (var child = info.firstChild; child; child = child.nextSibling) {
-      if (child.style) {
-        child.style.display = child.id == s ? 'inline' : 'none';
-      }
-    }
-    info.style.visibility = 'visible';
-  } else {
-    info.style.visibility = 'hidden';
-  }
 }
 
 var current_style;

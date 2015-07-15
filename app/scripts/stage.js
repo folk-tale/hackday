@@ -23,8 +23,7 @@ $("#stage").droppable({
       var stageY = $(this).position().top;
       document.getElementById("stage").appendChild($imgWrapper.get(0));
 
-
-      console.log("imageX: " + imgX + ", imageY: " + imgY + ", stageX: " + $(".stage-container") .position().left);
+      //console.log("imageX: " + imgX + ", imageY: " + imgY + ", stageX: " + $(".stage-container") .position().left);
       $imgWrapper.css({
         'position': 'absolute', 
         'left': imgX-$(".stage-container").position().left, 

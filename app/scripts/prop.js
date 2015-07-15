@@ -144,8 +144,8 @@ function registerTypes(model) {
     prop.elem.style.left = prop.startX;
     prop.elem.style.top = prop.startY;
 
-    console.log("Left: " + prop.elem.style.left 
-      + ", top: " + prop.elem.style.top);
+    //console.log("Left: " + prop.elem.style.left 
+    //  + ", top: " + prop.elem.style.top);
     //prop.elem.style.left = prop.startX;
     var $img = $(prop.elem).children('img');
 
@@ -170,9 +170,6 @@ function registerTypes(model) {
   Prop.prototype.delete = function() {
     // ???
   }
-
-  
-
 
   // Register prop class
   gapi.drive.realtime.custom.registerType(Prop, 'Prop');
@@ -225,6 +222,7 @@ function makeDraggableElement(url, id) {
   });
   return div;
 }
+
 function addProp(ide, stx, sty, width, height, url) {
   var prop = model.create(Prop, ide, stx, sty, width, height, url);
   model.getRoot().set(ide, prop);
@@ -243,9 +241,7 @@ function createPropFromElement(elem) {
     //$(elem).children('img').attr('src'));
 }
 
-
 function addGrowButton($imgWrapper) {
-
   var growButton = document.createElement('button');
   growButton.className = "grow-button";
   growButton.innerHTML = "+";
@@ -321,6 +317,5 @@ function addShrinkButton($imgWrapper) {
       $(this).parent().position().top,
       $img.width(), 
       $img.height());
-
   });
 }

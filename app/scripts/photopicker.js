@@ -80,7 +80,7 @@ function pickRandomImage() {
 
 // A simple callback implementation.
 function pickerCallback(data) {
-  console.log("Callback called")
+  //console.log("Callback called")
   var url = 'nothing';
   var hackyImageUrl = "http://www.googledrive.com/host/"
   var startIndex = "https://drive.google.com/file/d/".length
