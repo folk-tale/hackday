@@ -60,19 +60,21 @@ function getRandomInt(min, max) {
 }
 
 function crop() {
-  if ($("#bg-img").width() > $("#bg-img").height()) {
-      $("#bg-img").addClass("hamburger");
+  if ($("#stage-inner").width() > $("#stage-inner").height()) {
+      $("#stage-inner").addClass("hamburger");
   } else {
-      $("#bg-img").addClass("hotdog");
+      $("#stage-inner").addClass("hotdog");
   }
 }
 
 imageUrls = []
 function pickRandomImage() {
-  $("#bg-img").removeClass();
+  $("#stage-inner").removeClass();
   var randNum = getRandomInt(0, imageUrls.length - 1);
   console.log(imageUrls[randNum]);
-  document.getElementById("bg-img").src = imageUrls[randNum];
+  var stage = document.getElementById("stage-inner");
+  stage.style.background = 'url("' + imageUrls[randNum] + '") no-repeat';
+  stage.style.backgroundSize = "cover";
   // excise chosen one from array
   imageUrls.splice(randNum, 1);
   crop();
