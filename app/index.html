@@ -1,248 +1,57 @@
-
+<!DOCTYPE html>
 <html>
+
   <head>
+
     <title>JSON/Atom Custom Search API Example</title>
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
-    <style type="text/css">
-    html, body {
-      background: #F6F0E6;
-      font-family: Arial, sans-serif;
-      font-size: 14pt;
-    }
+    <link rel="stylesheet" href="styles/style.css" />
 
-    h5 {
-      margin-bottom: 0px;
-      text-transform: uppercase;
-      color: #666666;
-    }
-    hr {
-      height: 1px;
-      border: 0px;
-      margin: 2px 0px;
-      background: #999999;
-    }
-    .hidden {
-      display: none;
-    }
-    .result {
-      margin: 10px;
-      display: inline-block;
-      max-width: 100px;
-      max-height: 100px;
+    <!-- Javascript NLP library (See https://github.com/spencermountain/nlp_compromise) -->
+    <script src="scripts/nlp.min.js"></script>
 
-      -moz-animation-name: grow;
-      -moz-animation-iteration-count: 1;
-      -moz-animation-timing-function: ease-in;
-      -moz-animation-duration: 0.3s;
+    <!-- jQuery and jQuery UI -->
+    <script src="scripts/jquery-1.10.2.js"></script>
+    <script src="scripts/jquery-ui.js"></script>
+    <link rel="stylesheet" href="styles/jquery-ui.css" />
 
-      -webkit-animation-name: grow;
-      -webkit-animation-iteration-count: 1;
-      -webkit-animation-timing-function: ease-in;
-      -webkit-animation-duration: 0.3s;
+    <!-- See http://jqueryui.com/draggable/ for examples and API -->
+    <script src="scripts/photopicker.js"></script>
 
-      animation-name: grow;
-      animation-iteration-count: 1;
-      animation-timing-function: ease-in;
-      animation-duration: 0.2s;
-    }
-
-    @font-face {
-      font-family: Kiddish;
-      src: url(/app/fonts/Kiddish.ttf);
-    }
-
-    .container {
-      padding-top: 20px;
-      width: 80%;
-      height: 600px;
-      margin: auto;
-    }
-
-    .search-bar-container {
-      float: left;
-      width: 66%;
-    }
-
-    .search-input {
-      width: 80%;
-    }
-
-    .search-submit {
-      width: 18%;
-    }
-
-    .results-header {
-      width: 10%;
-    }
-
-    .results {
-      height: 100%;
-      overflow-y: auto;
-    }
-
-    .floatLeft {
-      float: left;
-    }
-    .floatRight {
-      float: right;
-    }
-
-    .backstage-container {
-      width:  30%;
-      float: right;
-    }
-
-    .stage-container {
-      float: left;
-      width: 66%;
-      height: 100%;
-      font-family: Kiddish;
-      font-size: 25px;
-      z-index: 950;
-    }
-
-    .term {
-      margin-top: 5px;
-      margin-right: 5px;
-      padding: 5px;
-      display: inline-block;
-      background: #FFFFFF;
-      border: 1px solid #999999;
-      color: #999999;
-    }
-    #queryfield, 
-    #submitbutton {
-      padding: 5px;
-      font-size: 14pt;
-      height: 30pt;
-    }
-    #submitbutton {
-      float: right;
-    }
-    @-moz-keyframes grow {
-        0% {
-            max-width: 0px;
-            max-height: 0px;
-        }
-        100% {
-            max-width: 100px;
-            max-height: 100px;
-        }
-    }
-    @-webkit-keyframes grow {
-        0% {
-            max-width: 0px;
-            max-height: 0px;
-        }
-        100% {
-            max-width: 100px;
-            max-height: 100px;
-        }
-    }
-    @keyframes grow {
-        0% {
-            max-width: 0px;
-            max-height: 0px;
-        }
-        100% {
-            max-width: 100px;
-            max-height: 100px;
-        }
-    }
-    
-    #stage-inner {
-      width: 100%;
-      height: 90%;
-      /*padding: 0.5em;*/
-      border: 1px solid #999999;
-      position: relative;
-      z-index: 950;
-      background: #FBFBFB;
-      box-sizing: border-box;
-      overflow: hidden;
-    }
-
-    #stage {
-      width: 100%;
-      height: 90%;
-      position: absolute;
-    }
-
-    #trash {
-      width: 100px;
-      height: 100px;
-      border: 1px solid #999999;
-    }
-
-    #grow-button {
-      width: 100px;
-      height: 100px;
-      color: #009900;
-      position: absolute;
-    }
-
-    .img-wrapper {
-      display: inline-block;
-    }
-
-    #next-stage, #prev-stage {
-      text-decoration: none;
-      position: absolute;
-      top: 50%;
-      font-size: 100px;
-      transform: translateY(-50%);
-      color: gray;
-    }
-
-    #next-stage {
-      right: 5px;
-    }
-
-    #prev-stage {
-      left:5px;
-    }
-
-    #bg-img.hamburger{
-      max-height:100%;
-    }
-
-    #bg-img.hotdog{
-      max-width:100%;
-    }
-
-    </style>
-    <!-- Javascript NLP library. Not as robust as a server-side library but good enough. -->
-    <script src="https://rawgit.com/spencermountain/nlp_compromise/master/client_side/nlp.min.js"> </script>
-
-  <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
-  <script src="//code.jquery.com/jquery-1.10.2.js"></script>
-  <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-  <!-- See http://jqueryui.com/draggable/ for examples and API -->
-  <script src="photopicker.js"></script>    
-  <script type="text/javascript" src="https://apis.google.com/js/api.js?onload=onApiLoad"></script>
-
-
+    <!-- Google APIs -->
+    <script type="text/javascript" src="https://apis.google.com/js/api.js?onload=onApiLoad"></script>
 
   </head>
+
   <body>
+
     <div class="container">
+
       <div class="search-bar-container">
         <form action="javascript:searchAll()" accept-charset="utf-8">
           <input type="text" class="search-input" id="queryfield" placeholder="Enter a sentence..." name="q"></input>
           <button type="submit" class="search-submit" id="submitbutton">Go</button>
         </form>
-          <h5 class="results-header floatLeft">Nouns: </h5>
-          <div class="floatLeft" id="terms"></div>
-      </div>
+      </div> <!-- searchbar-container -->
 
       <div class="backstage-container">
-        <h5>Search results</h5>
-        <hr />
-        <div class="results" id="content"></div>
-        <a onclick="window.open(window.location.href);return false;" target="_blank" href="#">new tab</a>
-        <button id="auth_button">Authorize</button>
-        <button id="test_button" class="visible">Test</button>
-      </div>
+
+        <div id="terms-container">
+          <h5>Search terms</h5>
+          <hr />
+          <div id="terms"></div>
+        </div> <!-- terms-container -->
+
+        <div id="results-container">
+          <h5>Search results</h5>
+          <hr />
+          <div class="results" id="content"></div>
+          <a onclick="window.open(window.location.href);return false;" target="_blank" href="#">new tab</a>
+          <button id="auth_button">Authorize</button>
+          <button id="test_button" class="visible">Test</button>
+        </div> <!-- results-container -->
+
+      </div> <!-- backstage-container -->
 
       <div class="stage-container">
         <button onclick="pickRandomImage()">Click me</button>
@@ -252,179 +61,23 @@
           <a href="#" onclick="return false" id="next-stage">&rsaquo;</a>
           <div id="stage"></div>
         </div>
-      </div>
+      </div> <!-- stage-container -->
 
-    </div>
-      
-    <script src="https://apis.google.com/js/api.js"></script>
-    <script src="realtime-client-utils.js"></script>
-    <script src="prop.js"></script>
+    </div> <!-- container -->
+    
+    <!-- Note: Order of scripts below is important!!! -->
 
-    <script>
+    <!-- Synchronization with Realtime API -->
+    <script src="scripts/realtime-api.js"></script>
+    <script src="scripts/realtime-client-utils.js"></script>
+    <script src="scripts/prop.js"></script>
 
-    var props = {}; // A hash from ids to Props
+    <!-- Dragging and dropping with jQuery -->
+    <script src="scripts/stage.js"></script>
 
-    // Important semantic clarification:
-    // Currently, searching locally creates draggable prop elements, but it
-    // doesn't turn them into network-synchronized Props until you drag them
-    // onto the stage. As such, dragging them off-stage should delete the Prop.
-    // (Props are resizable, and can only be dragged by one person at a time.)
+    <!-- Image search -->
+    <script src="scripts/search.js"></script>
 
-    // Setting up for when you drop a prop into the stage
-    $("#stage").droppable({
-      drop: function(event, ui) {
-
-        // If the dragged-in image was in the "content" bar, transfer it to the stage
-        if (ui.draggable.parent().is($('#content'))) {
-          var $imgWrapper = ui.draggable;
-          var $img = $imgWrapper.children('img');
-          var width = $img.width();
-          var height = $img.height();
-
-          var imgX = $imgWrapper.position().left;
-          var imgY = $imgWrapper.position().top;
-          var stageX = $(this).position().left;
-          var stageY = $(this).position().top;
-          document.getElementById("stage").appendChild($imgWrapper.get(0));
-
-
-          console.log("imageX: " + imgX + ", imageY: " + imgY + ", stageX: " + $(".stage-container") .position().left);
-          $imgWrapper.css({
-            'position': 'absolute', 
-            'left': imgX-$(".stage-container").position().left, 
-            'top': imgY-$(".stage-container").position().top,
-          });
-
-          $img = $imgWrapper.children('img');
-          $img.css({
-            'max-width': $("#stage").width(),
-            'max-height': $("#stage").height()
-          });
-          $img.width(width);
-          $img.height(height);
-
-          addGrowButton($imgWrapper);
-          addShrinkButton($imgWrapper);
-          
-          ui.draggable.hover(
-            function() {
-              if ($(this).parent().is($('#stage'))) {
-                addGrowButton($(this));
-                addShrinkButton($(this));
-              }
-            },function() {
-              $('.grow-button').remove();
-              $('.shrink-button').remove();
-          });
-
-          // Now it needs to be synchronized, so we make it an official prop:
-          props[ui.draggable.attr('id')] = createPropFromElement(ui.draggable.get(0));
-
-        }
-      }
-    });
-
-    // Setting up offstage to properly receive dragged-off props
-    $("#content").droppable({
-      accept: "#stage div", // that way you can't drag around within content
-      drop: function(event, ui) {
-        if (ui.draggable.parent().is($('#stage'))) {
-          var $img = ui.draggable.children('img');
-
-          var width = $img.width();
-          var height = $img.height();
-
-          document.getElementById("content").appendChild(ui.draggable.get(0));
-          ui.draggable.css({position: 'relative', left: 0, top: 0});
-           $img = ui.draggable.children('img');
-
-          var scaleDownX = 100.0/width;
-          var scaleDownY = 100.0/height;
-
-          $img.width(width * Math.min(scaleDownX, scaleDownY));
-          $img.height(height * Math.min(scaleDownX, scaleDownY));
-
-          $img.css({
-            'max-width': '100px',
-            'max-height': '100px'
-          });
-          $('.grow-button').remove();
-          $('.shrink-button').remove();
-        }
-
-        // No longer needs to be synchronized, so:
-        props[$ui.draggable.id].delete();
-        delete props[$ui.draggable.id];
-      }
-    });
-
-  
-
-      // For old Image Search API (we actually use this, though)
-      function hndlr(response) {
-        for (var i = 0; i < response.responseData.results.length; i++) {
-          var item = response.responseData.results[i];
-          var id = "i"+Math.random();
-          var propDiv = makeDraggableElement(item.url, id);
-          document.getElementById("content").appendChild(propDiv);
-        }
-      }
-      // For new Custom Search API (unused?)
-      function hndlr2(response) {
-        for (var i = 0; i < response.items.length; i++) {
-          var item = response.items[i];
-          var img = document.createElement('img');
-          img.src = item.link;
-          img.className = "hidden";
-          img.onload = function() { this.className = "result"; }
-          document.getElementById("content").appendChild(img);
-        }
-      }
-    </script>
-    <script>
-      function searchNoun(noun) {
-        /* // Using new Custom Search API (can only filter by PNG or GIF)
-        var req = new XMLHttpRequest();
-        req.onreadystatechange = function() {
-            if (req.readyState == 4) {
-              hndlr(JSON.parse(req.responseText));
-              //hndlr2(JSON.parse(req.responseText));
-            }
-        }
-        var query = encodeURI(noun);
-        var reqURL = "https://www.googleapis.com/customsearch/v1?key=AIzaSyB_laO9ignQqxeCTOjRF5aYr1RvfdAWfME&cx=004787686795910839531%3Acf2pijgb3ra&searchType=image&fileType=png&imgType=clipart&imgc=trans&alt=json&q=" + query;
-        req.open("GET", reqURL);
-        req.setRequestHeader('Content-Type', 'application/json');
-        req.send();
-        document.getElementById("terms").innerHTML += "<span class=\"term\">" + noun + "</span>";
-        */
-
-        // Using old Image Search API (allows searching for transparent images)
-        var query = encodeURI(noun);
-        var reqURL = "http://ajax.googleapis.com/ajax/services/search/images?v=1.0&callback=hndlr&rsz=8&imgc=trans&imgsz=medium&safe=active&q=" + query;
-        var script = document.createElement("script");
-        script.src = reqURL;
-        document.getElementById("content").appendChild(script);
-        document.getElementById("terms").innerHTML += "<span class=\"term\">" + noun + "</span>";
-      }
-    </script>
-    <script>
-      function searchAll() {
-        document.getElementById("content").innerHTML = "";
-        document.getElementById("terms").innerHTML = "";
-        var input = document.querySelector("#queryfield").value;
-        var nouns = nlp.pos(input).sentences[0].nouns();
-        for (var i = 0; i < nouns.length; i++) {
-          var noun = nouns[i];
-          if (noun.pos.tag.lastIndexOf("NNP", 0) === 0 || // Skip proper nouns
-              noun.pos.tag.lastIndexOf("PRP", 0) === 0 || // Skip pronouns
-              noun.pos.tag.lastIndexOf("WH", 0) === 0)    // Skip wh- pronouns
-          {
-            continue;
-          }
-          searchNoun(noun.text);
-        }
-      }
-    </script>
   </body>
+
 </html>
