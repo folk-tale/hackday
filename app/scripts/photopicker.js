@@ -73,7 +73,7 @@ function pickRandomImage() {
   var randNum = getRandomInt(0, imageUrls.length - 1);
   console.log(imageUrls[randNum]);
   var stage = document.getElementById("stage-inner");
-  stage.style.background = 'url("' + imageUrls[randNum] + '") no-repeat';
+  stage.style.background = '#FBFBFB url("' + imageUrls[randNum] + '") no-repeat';
   stage.style.backgroundSize = "cover";
   // excise chosen one from array
   imageUrls.splice(randNum, 1);
