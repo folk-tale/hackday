@@ -1,7 +1,7 @@
-var clientId = '324627207270-ojamt80hdehm8dkup55o8cih0ag4d5j8.apps.googleusercontent.com';
+//var clientId = '324627207270-ojamt80hdehm8dkup55o8cih0ag4d5j8.apps.googleusercontent.com';
 
 // Ben-han's client ID
-// var clientId = '355588130388-q160ev44v09s1h2ka76fun7k1cj8ptat.apps.googleusercontent.com';
+var clientId = '355588130388-q160ev44v09s1h2ka76fun7k1cj8ptat.apps.googleusercontent.com';
 
 if (!/^([0-9])$/.test(clientId[0])) {
   alert('Invalid Client ID - did you forget to insert your application Client ID?');
@@ -53,141 +53,215 @@ function start() {
 }
 
 // The first time a file is opened, it must be initialized with the
-// document structure. This function will add a collaborative string
-// to our model at the root.
+// document structure. 
 function onFileInitialize(model) {
-  // Nothing necessary here
+  // Any one-time setup should go here
+  // For ex: Initialize the stage (we only have one stage
+  // across all collaborators)
+  var stage = model.create(Stage, "stage-inner", "prev-stage", "next-stage", null);
+  model.getRoot().set("stage", stage);
 }
 
 // After a file has been initialized and loaded, we can access the
 // document. We will wire up the data model to the UI.
 function onFileLoaded(doc) {
-  var collaborativeString = doc.getModel().getRoot().get('demo_string');
   model = doc.getModel();
+
+  // Load existing objects
+  var keys = model.getRoot().keys();
+  for (var i = 0; i < keys.length; i++) {
+    var prop = model.getRoot().get(keys[i]);
+
+    // There's a gotcha here...
+    // This only works because every custom class we've registered
+    // uses "onload" for the onLoaded event. I can't figure out
+    // how to call the onLoaded event, so this works by polymorphism.
+    prop.onload();
+  }
 }
 
 function registerTypes(model) {
+
   // Prop class implementation
-  Prop = function() {}
-  Prop.prototype.id = gapi.drive.realtime.custom.collaborativeField('id');
-  Prop.prototype.startX = gapi.drive.realtime.custom.collaborativeField('startX');
-  Prop.prototype.startY = gapi.drive.realtime.custom.collaborativeField('startY');
-  Prop.prototype.lenX = gapi.drive.realtime.custom.collaborativeField('lenX');
-  Prop.prototype.lenY = gapi.drive.realtime.custom.collaborativeField('lenY');
-  Prop.prototype.imageURL = gapi.drive.realtime.custom.collaborativeField('imageURL');
+  function registerProps() {
+    Prop = function() {}
+    Prop.prototype.id = gapi.drive.realtime.custom.collaborativeField('id');
+    Prop.prototype.startX = gapi.drive.realtime.custom.collaborativeField('startX');
+    Prop.prototype.startY = gapi.drive.realtime.custom.collaborativeField('startY');
+    Prop.prototype.lenX = gapi.drive.realtime.custom.collaborativeField('lenX');
+    Prop.prototype.lenY = gapi.drive.realtime.custom.collaborativeField('lenY');
+    Prop.prototype.imageURL = gapi.drive.realtime.custom.collaborativeField('imageURL');
 
-  Prop.prototype.init = function(ide, stx, sty, width, height, url) {
-    this.id = ide;
-    if (document.getElementById(this.id))
-      this.elem = document.getElementById(this.id);
-    this.startX = stx;
-    this.startY = sty;
-    this.lenX = width;
-    this.lenY = height;
-    this.imageURL = url;
-    this.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, this.update);
-  }
+    Prop.prototype.init = function(propID, propX, propY, propWidth, propHeight, propURL) {
+      this.id = propID;
+      this.startX = propX;
+      this.startY = propY;
+      this.lenX = propWidth;
+      this.lenY = propHeight;
+      this.imageURL = propURL;
+    }
 
-  // This gets called when somebody else adds a prop
-  Prop.prototype.onload = function() {
-    if (!this.elem) {
-      this.elem = document.getElementById(this.id);
+    // This gets called when somebody else adds a prop
+    Prop.prototype.onload = function() {
       if (!this.elem) {
-        this.elem = makeDraggableElement(this.imageURL, this.id);
-        console.log("Made the element: " + this.elem);
+        this.elem = document.getElementById(this.id);
+        if (!this.elem) {
+          this.elem = makeDraggableElement(this.imageURL, this.id);
+          console.log("Made the element: " + this.elem);
 
-        // this.elem = document.createElement("img");
-        // this.elem.id = this.id;
-        // this.elem.src = this.imageURL;
-        // this.elem.style.display = "inline-block";
-        // this.elem.style.position = "absolute";
+          // An alternative to this casework is to have it get the
+          // parentNode of the element in createPropFromElement
+          if (document.getElementById("stage")!==null) {
+            document.getElementById("stage").appendChild(this.elem);
+            $(this.elem).css({
+              'position': 'absolute', 
+              'left': this.startX, 
+              'top': this.startY,
+            });
+          }
+          else {
+            document.body.appendChild(this.elem);
+          }
 
-        // An alternative to this casework is to have it get the
-        // parentNode of the element in createPropFromElement
-        if (document.getElementById("stage")!==null) {
-          document.getElementById("stage").appendChild(this.elem);
-          $(this.elem).css({
-            'position': 'absolute', 
-            'left': this.startX, 
-            'top': this.startY,
-          });
-        }
-        else
-          document.body.appendChild(this.elem);
-
-        // Near-duplicate of what's in index.html - probably a good idea
-        // to name these functions, define them once, and call them here.
-        $(this.elem).hover(
+          // Near-duplicate of what's in index.html - probably a good idea
+          // to name these functions, define them once, and call them here.
+          $(this.elem).hover(
             function() {
               if ($(this).parent().is($('#stage'))) {
                 addGrowButton($(this));
                 addShrinkButton($(this));
               }
-            },function() {
+            }, function() {
               $('.grow-button').remove();
               $('.shrink-button').remove();
-          });
-        props[this.id] = this;
+            }
+          );
+
+          props[this.id] = this;
+        }
         this.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, this.update);
       }
+      this.elem.style.top = this.startY;
+      this.elem.style.left = this.startX;
+      this.elem.style.width = this.lenX;
+      this.elem.style.height = this.lenY;
+      $(this.elem).children('img').width(this.lenX);
+      $(this.elem).children('img').height(this.lenY);
     }
-    this.elem.style.top = this.startY;
-    this.elem.style.left = this.startX;
-    this.elem.style.width = this.lenX;
-    this.elem.style.height = this.lenY;
-    $(this.elem).children('img').width(this.lenX);
-    $(this.elem).children('img').height(this.lenY);
+
+    Prop.prototype.update = function(event) {
+      var prop = event.target;
+      prop.elem.style.left = prop.startX;
+      prop.elem.style.top = prop.startY;
+
+      //console.log("Left: " + prop.elem.style.left 
+      //  + ", top: " + prop.elem.style.top);
+      //prop.elem.style.left = prop.startX;
+      var $img = $(prop.elem).children('img');
+
+      // So max-width/height doesn't squash it
+      if (!$img.css('max-width') || prop.lenX > $img.css('max-width'))
+        $img.css('max-width', prop.lenX+"px");
+      if (!$img.css('max-height') || prop.lenY > $img.css('max-height'))
+        $img.css('max-height', prop.lenY+"px");
+
+      $(prop.elem).children('img').width(prop.lenX);
+      $(prop.elem).children('img').height(prop.lenY);
+    }
+
+    Prop.prototype.sync = function(stx, sty, width, height) {
+      // Update properties from position on page
+      this.startX = stx;
+      this.startY = sty;
+      this.lenX = width;
+      this.lenY = height;
+    }
+
+    Prop.prototype.delete = function() {
+      // ???
+    }
+
+    // Register Prop class with Realtime
+    gapi.drive.realtime.custom.registerType(Prop, 'Prop');
+    gapi.drive.realtime.custom.setInitializer(Prop, Prop.prototype.init);
+    gapi.drive.realtime.custom.setOnLoaded(Prop, Prop.prototype.onload);
   }
 
-  Prop.prototype.update = function(event) {
-    var prop = event.target;
-    prop.elem.style.left = prop.startX;
-    prop.elem.style.top = prop.startY;
+  function registerStage() {
+    Stage = function() {}
+    Stage.prototype.id = gapi.drive.realtime.custom.collaborativeField('id');
+    Stage.prototype.forwardId = gapi.drive.realtime.custom.collaborativeField('forwardId');
+    Stage.prototype.backwardId = gapi.drive.realtime.custom.collaborativeField('backwardId');
+    Stage.prototype.backgroundList = gapi.drive.realtime.custom.collaborativeField('backgroundList');
+    Stage.prototype.currentBackgroundIndex = gapi.drive.realtime.custom.collaborativeField('currentBackgroundIndex');
+    
+    // One-time init for a stage
+    Stage.prototype.init = function(stageID, forwardButtonID, backwardButtonID, backgrounds) {
+      this.id = stageID;
+      this.forwardId = forwardButtonID;
+      this.backwardId = backwardButtonID;
+      this.backgroundList = backgrounds;
+      this.currentBackgroundIndex = 0;
+    }
 
-    //console.log("Left: " + prop.elem.style.left 
-    //  + ", top: " + prop.elem.style.top);
-    //prop.elem.style.left = prop.startX;
-    var $img = $(prop.elem).children('img');
+    // This gets called when somebody else joins the session
+    // and needs to create and sync the stage
+    Stage.prototype.onload = function() {
+      console.log("Stage onload was called");
+      if (!this.elem) {
+        this.elem = document.getElementById(this.id);
+        this.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, this.update);
+      }
 
-    // So max-width/height doesn't squash it
-    if (!$img.css('max-width') || prop.lenX > $img.css('max-width'))
-      $img.css('max-width', prop.lenX+"px");
-    if (!$img.css('max-height') || prop.lenY > $img.css('max-height'))
-      $img.css('max-height', prop.lenY+"px");
+      // Wire up forward button
+      var stage = this;
+      var forwardButton = document.getElementById(this.forwardId);
+      forwardButton.addEventListener("click", function() {
+        console.log("Flip forward");
+        stage.flipForward();
+      });
 
-    $(prop.elem).children('img').width(prop.lenX);
-    $(prop.elem).children('img').height(prop.lenY);
+      // Wire up back button
+      var backwardButton = document.getElementById(this.backwardId);
+      backwardButton.addEventListener("click", function() {
+        console.log("Flip backward");
+        stage.flipBackwards();
+      });
+    }
+
+    // Gets called whenever the stage is modified
+    // (E.g. page flip)
+    Stage.prototype.update = function() {
+      this.elem.style.background = '#FBFBFB url("' + this.backgroundList[this.currentBackgroundIndex] + '") no-repeat';
+    }
+
+    // Flips forward to the next page
+    Stage.prototype.flipForward = function() {
+      var testCopy = this.currentBackgroundIndex;
+      if (++testCopy < this.backgroundList.length) {
+        this.currentBackgroundIndex++;
+      }
+    }
+
+    // Flips back to the previous page
+    Stage.prototype.flipBackwards = function() {
+      var testCopy = this.currentBackgroundIndex;
+      if (--testCopy >= 0 && this.backgroundList.length > 0) {
+        this.currentBackgroundIndex--;
+      }
+    }
+
+    // Register stage class with Realtime
+    gapi.drive.realtime.custom.registerType(Stage, 'Stage');
+    gapi.drive.realtime.custom.setInitializer(Stage, Stage.prototype.init);
+    gapi.drive.realtime.custom.setOnLoaded(Stage, Stage.prototype.onload);
   }
 
-  Prop.prototype.sync = function(stx, sty, width, height) {
-    // Update properties from position on page
-    this.startX = stx;
-    this.startY = sty;
-    this.lenX = width;
-    this.lenY = height;
-  }
-
-  Prop.prototype.delete = function() {
-    // ???
-  }
-
-  // Register prop class
-  gapi.drive.realtime.custom.registerType(Prop, 'Prop');
-  gapi.drive.realtime.custom.setInitializer(Prop, Prop.prototype.init);
-  gapi.drive.realtime.custom.setOnLoaded(Prop, Prop.prototype.onload);
+  registerProps();
+  registerStage();
 }
 
 //----- Begin wrapper API -----//
-
-/* Creates a new prop on the stage
- * Parameters:
- * ide (string) - CSS id for the prop
- * stx (string) - x-coordinate of top left corner of the prop
- * sty (string) - y-coordinate of top right corner of the prop
- * width (string) - width of the prop
- * height (string) - height of the prop
- * url (string) - image URL for the prop
- */
 
 function makeDraggableElement(url, id) {
   var img = document.createElement('img');
@@ -223,9 +297,18 @@ function makeDraggableElement(url, id) {
   return div;
 }
 
-function addProp(ide, stx, sty, width, height, url) {
-  var prop = model.create(Prop, ide, stx, sty, width, height, url);
-  model.getRoot().set(ide, prop);
+/* Creates a new prop on the stage
+ * Parameters:
+ * propID (string) - CSS id for the prop
+ * propX (string) - x-coordinate of top left corner of the prop
+ * propY (string) - y-coordinate of top right corner of the prop
+ * propWidth (string) - width of the prop
+ * propHeight (string) - height of the prop
+ * propURL (string) - image URL for the prop
+ */
+function addProp(propID, propX, propY, propWidth, propHeight, propURL) {
+  var prop = model.create(Prop, propID, propX, propY, propWidth, propHeight, propURL);
+  model.getRoot().set(propID, prop);
   return prop;
 }
 
@@ -236,9 +319,6 @@ function createPropFromElement(elem) {
     elem.childNodes[0].style.width,
     elem.childNodes[0].style.height,
     elem.childNodes[0].src);
-    //$(elem).children('img').width(), 
-    //$(elem).children('img').height(), 
-    //$(elem).children('img').attr('src'));
 }
 
 function addGrowButton($imgWrapper) {
