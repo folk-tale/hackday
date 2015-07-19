@@ -207,7 +207,6 @@ function registerTypes(model) {
     // This gets called when somebody else joins the session
     // and needs to create and sync the stage
     Stage.prototype.onload = function() {
-      console.log("Stage onload was called");
       if (!this.elem) {
         this.elem = document.getElementById(this.id);
         this.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, this.update);
@@ -217,14 +216,12 @@ function registerTypes(model) {
       var stage = this;
       var forwardButton = document.getElementById(this.forwardId);
       forwardButton.addEventListener("click", function() {
-        console.log("Flip forward");
         stage.flipForward();
       });
 
       // Wire up back button
       var backwardButton = document.getElementById(this.backwardId);
       backwardButton.addEventListener("click", function() {
-        console.log("Flip backward");
         stage.flipBackwards();
       });
     }
