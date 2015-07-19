@@ -5,6 +5,7 @@
 
     <title>JSON/Atom Custom Search API Example</title>
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <link rel="stylesheet" href="styles/speech.css" />
     <link rel="stylesheet" href="styles/style.css" />
 
     <!-- Javascript NLP library (See https://github.com/spencermountain/nlp_compromise) -->
@@ -16,7 +17,7 @@
     <link rel="stylesheet" href="styles/jquery-ui.css" />
 
     <!-- See http://jqueryui.com/draggable/ for examples and API -->
-    <script src="scripts/photopicker.js"></script>
+    <!-- <script src="scripts/photopicker.js"></script> -->
 
     <!-- Google APIs -->
     <script type="text/javascript" src="https://apis.google.com/js/api.js?onload=onApiLoad"></script>
@@ -25,12 +26,56 @@
 
   <body>
 
+    <!-- Unneeded HTML from WebSpeech demo -->
+    <div style="display: none;">
+      <div id="info">
+        <!-- deleted -->
+      </div>
+
+      <div class="right">
+        <!-- deleted -->
+      </div>
+
+      <div id="results">
+        <span id="final_span" class="final"></span>
+        <span id="interim_span" class="interim"></span>
+        <p>
+      </div> 
+
+      <div class="center">
+        <div class="sidebyside" style="text-align:right">
+          <button id="copy_button" class="button" onclick="copyButton()">
+            Copy and Paste</button>
+          <div id="copy_info" class="info">
+            Press Control-C to copy text.<br>(Command-C on Mac.)
+          </div>
+        </div>
+        <div class="sidebyside">
+          <button id="email_button" class="button" onclick="emailButton()">
+            Create Email</button>
+          <div id="email_info" class="info">
+            Text sent to default email application.<br>
+            (See chrome://settings/handlers to change.)
+          </div>
+        </div>
+
+        <div id="div_language" style="display: none;">
+          <select id="select_language" onchange="updateCountry()"></select>
+          &nbsp;&nbsp;
+          <select id="select_dialect"></select>
+        </div>
+      </div>
+    </div>
+
     <div class="container">
 
       <div class="search-bar-container">
         <form action="javascript:searchAll()" accept-charset="utf-8">
           <input type="text" class="search-input" id="queryfield" placeholder="Enter a sentence..." name="q"></input>
           <button type="submit" class="search-submit" id="submitbutton">Go</button>
+          <button id="start_button" onclick="startButton(event)">
+            <img id="start_img" src="images/mic.gif" alt="Start">
+          </button>
         </form>
       </div> <!-- searchbar-container -->
 
@@ -56,10 +101,9 @@
       <div class="stage-container">
         <button onclick="pickRandomImage()">Click me</button>
         <div id="stage-inner">
-          <img id="bg-img" src="" >
-          <a href="#" onclick="return false" id="prev-stage">&lsaquo;</a>
-          <a href="#" onclick="return false" id="next-stage">&rsaquo;</a>
           <div id="stage"></div>
+          <div id="prev-stage">&lsaquo;</div>
+          <div id="next-stage">&rsaquo;</div>
         </div>
       </div> <!-- stage-container -->
 
@@ -77,6 +121,9 @@
 
     <!-- Image search -->
     <script src="scripts/search.js"></script>
+
+    <!-- Speech processing -->
+    <script src="scripts/speech.js"></script>
 
   </body>
 

@@ -70,6 +70,7 @@ hr {
 
 .results {
   height: 100%;
+  max-height: 450px;
   overflow-y: scroll;
 }
 
@@ -83,7 +84,7 @@ hr {
 }
 
 .search-input {
-  width: 80%;
+  width: 60%;
 }
 
 .search-submit {
@@ -177,6 +178,18 @@ hr {
   overflow: hidden;
 }
 
+#start_button {
+  float: right;
+  width: 18%;
+  margin-right: 2%;
+  height: 30pt;
+}
+
+#start_button img {
+  top: -5pt;
+  position: relative;
+}
+
 #submitbutton {
   box-sizing: border-box;
   padding: 5px;
@@ -184,7 +197,6 @@ hr {
   height: 30pt;
   float: right;
 }
-
 
 #trash {
   width: 100px;
