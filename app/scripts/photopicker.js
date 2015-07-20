@@ -50,6 +50,7 @@ function createPicker() {
         setOAuthToken(oauthToken).
         setDeveloperKey(developerKey).
         setCallback(pickerCallback).
+        setTitle("Pick background photos").
         build();
     picker.setVisible(true);
   }
@@ -89,8 +90,9 @@ function pickerCallback(data) {
   if (data[google.picker.Response.ACTION] == google.picker.Action.PICKED) {
     
     var numPhotosSelected = data[google.picker.Response.DOCUMENTS].length
-    if (numPhotosSelected >= MIN_PHOTOS_SELECTED) {
 
+    // Aggregate selected pictures and pass to Realtime API
+    if (numPhotosSelected >= MIN_PHOTOS_SELECTED) {
       var doc = data[google.picker.Response.DOCUMENTS][0];
       console.log(doc);
       url = doc[google.picker.Document.URL];
@@ -103,13 +105,23 @@ function pickerCallback(data) {
         var imageId = gDriveUrl.substring(startIndex, imageIdEnd);
         imageUrls[i] = hackyImageUrl + imageId;     
       }
+      imageUrls.splice();
 
-      imageUrls.splice()
-    } else {
-      // error message
+      // var message = 'You picked: ' + url;
+      // document.getElementById('result').innerHTML = message;
+
+      // Start function for Realtime API
+      start(function() { return imageUrls; });
+    
+    }
+    // Error - user didn't pick enough pictures 
+    else {
+      alert("You must pick at least " + MIN_PHOTOS_SELECTED + " pictures.");
       createPicker();
     }
-  } 
-  // var message = 'You picked: ' + url;
-  // document.getElementById('result').innerHTML = message;
+  }
+  if (data[google.picker.Response.ACTION] == google.picker.Action.CANCEL) {
+    // Start function for Realtime API
+    start(function() { return null; });
+  }
 }

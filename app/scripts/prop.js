@@ -10,9 +10,17 @@ if (!/^([0-9])$/.test(clientId[0])) {
 var realtimeUtils = new utils.RealtimeUtils({ clientId: clientId });
 
 var model = null;
+var photos = null;
 
-authorize();
+// var photos = [
+//   "http://www.swampdogphotographyworkshops.com/wp-content/uploads/2013/04/MTB-thick-redwoods-HC_V3.jpg",
+//   "http://www.redwoods.info/photos%5C475P4trail.bmp",
+//   "http://hmbcoastsidetours.com/wp-content/uploads/2014/04/Shining-Through.jpg"
+// ];
 
+// This is automatically invoked once Google APIs have finished loading
+// (We pass a parameter to the Google API library indicating this is the
+// "on finished" callback function)
 function authorize() {
   // Attempt to authorize
   realtimeUtils.authorize(function(response){
@@ -23,19 +31,26 @@ function authorize() {
       button.classList.add('visible');
       button.addEventListener('click', function () {
         realtimeUtils.authorize(function(response){
-          start();
+          // Invoke photo-picking process (see photopicker.js for def. of onApiLoad())
+          onApiLoad();
         }, true);
       });
     } else {
-        start();
+        // Invoke photo-picking process (see photopicker.js for def. of onApiLoad())
+        onApiLoad();
     }
   }, false);
 }
 
-function start() {
+// pickPhotos is a callback function that should return a list of URLs
+// of photos to use as background images
+function start(pickPhotos) {
 
   // Register custom types
   registerTypes();
+
+  // Pick photos
+  photos = pickPhotos();
 
   // With auth taken care of, load a file, or create one if there
   // is not an id in the URL.
@@ -58,7 +73,8 @@ function onFileInitialize(model) {
   // Any one-time setup should go here
   // For ex: Initialize the stage (we only have one stage
   // across all collaborators)
-  var stage = model.create(Stage, "stage-inner", "prev-stage", "next-stage", null);
+
+  var stage = model.create(Stage, "stage-inner", "next-stage", "prev-stage", photos);
   model.getRoot().set("stage", stage);
 }
 
@@ -207,48 +223,54 @@ function registerTypes(model) {
     // This gets called when somebody else joins the session
     // and needs to create and sync the stage
     Stage.prototype.onload = function() {
-      console.log("Stage onload was called");
       if (!this.elem) {
         this.elem = document.getElementById(this.id);
         this.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, this.update);
+
+        // Wire up forward button
+        var stage = this;
+        var forwardButton = document.getElementById(this.forwardId);
+        forwardButton.addEventListener("click", function() {
+          stage.flipForward();
+        });
+
+        // Wire up back button
+        var backwardButton = document.getElementById(this.backwardId);
+        backwardButton.addEventListener("click", function() {
+          stage.flipBackwards();
+        });
       }
-
-      // Wire up forward button
-      var stage = this;
-      var forwardButton = document.getElementById(this.forwardId);
-      forwardButton.addEventListener("click", function() {
-        console.log("Flip forward");
-        stage.flipForward();
-      });
-
-      // Wire up back button
-      var backwardButton = document.getElementById(this.backwardId);
-      backwardButton.addEventListener("click", function() {
-        console.log("Flip backward");
-        stage.flipBackwards();
-      });
+      this.elem.style.background = '#FBFBFB url("' + this.backgroundList[this.currentBackgroundIndex] + '") no-repeat';
+      this.elem.style.backgroundSize = 'cover';
     }
 
     // Gets called whenever the stage is modified
     // (E.g. page flip)
-    Stage.prototype.update = function() {
-      this.elem.style.background = '#FBFBFB url("' + this.backgroundList[this.currentBackgroundIndex] + '") no-repeat';
+    Stage.prototype.update = function(event) {
+      var stage = event.target;
+      stage.elem.style.background = '#FBFBFB url("' + stage.backgroundList[stage.currentBackgroundIndex] + '") no-repeat';
+      stage.elem.style.backgroundSize = 'cover';
     }
 
     // Flips forward to the next page
     Stage.prototype.flipForward = function() {
-      var testCopy = this.currentBackgroundIndex;
-      if (++testCopy < this.backgroundList.length) {
+      var testCopy = this.currentBackgroundIndex + 1;
+      if (testCopy < this.backgroundList.length) {
         this.currentBackgroundIndex++;
       }
     }
 
     // Flips back to the previous page
     Stage.prototype.flipBackwards = function() {
-      var testCopy = this.currentBackgroundIndex;
-      if (--testCopy >= 0 && this.backgroundList.length > 0) {
+      var testCopy = this.currentBackgroundIndex - 1;
+      if (testCopy >= 0 && this.backgroundList.length > 0) {
         this.currentBackgroundIndex--;
       }
+    }
+
+    // Set backgrounds
+    Stage.prototype.setBackgrounds = function(backgrounds) {
+      this.backgroundList = backgrounds;
     }
 
     // Register stage class with Realtime
