@@ -107,7 +107,7 @@
     }, false);
 
     donebutton.addEventListener('click', function(ev){
-      // window.open(URL HERE)
+      window.open("file:///../index.html","_self")
       ev.preventDefault();
     }, false);
   
@@ -158,6 +158,7 @@
       retakebutton.style.display = 'block';
       takephotobutton.style.display = 'none';
       sessionStorage.setItem("photoData", data);
+      sessionStorage.setItem("color", character_frame.src);
     } else {
       clearphoto();
     }
