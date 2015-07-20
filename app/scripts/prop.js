@@ -1,7 +1,7 @@
-//var clientId = '324627207270-ojamt80hdehm8dkup55o8cih0ag4d5j8.apps.googleusercontent.com';
+var clientId = '324627207270-ojamt80hdehm8dkup55o8cih0ag4d5j8.apps.googleusercontent.com';
 
 // Ben-han's client ID
-var clientId = '355588130388-q160ev44v09s1h2ka76fun7k1cj8ptat.apps.googleusercontent.com';
+//var clientId = '355588130388-q160ev44v09s1h2ka76fun7k1cj8ptat.apps.googleusercontent.com';
 
 if (!/^([0-9])$/.test(clientId[0])) {
   alert('Invalid Client ID - did you forget to insert your application Client ID?');
@@ -32,12 +32,14 @@ function authorize() {
       button.addEventListener('click', function () {
         realtimeUtils.authorize(function(response){
           // Invoke photo-picking process (see photopicker.js for def. of onApiLoad())
-          onApiLoad();
+          start(function() { return null; });
+          //onApiLoad();
         }, true);
       });
     } else {
         // Invoke photo-picking process (see photopicker.js for def. of onApiLoad())
-        onApiLoad();
+        //onApiLoad();
+        start(function() { return null; });
     }
   }, false);
 }

@@ -2,8 +2,6 @@ $(function() {
   var id = "i"+Math.random();
   var propDiv = makeDraggableElement(sessionStorage.cmb, id);
   document.getElementById("content").appendChild(propDiv);
-
-
 })
 
 // For old Image Search API (we actually use this, though)
