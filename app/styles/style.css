@@ -141,10 +141,12 @@ hr {
 
 #next-stage {
   right: 5px;
+  cursor: pointer;
 }
 
 #prev-stage {
   left:5px;
+  cursor: pointer;
 }
 
 #queryfield {

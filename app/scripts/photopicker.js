@@ -109,6 +109,9 @@ function pickerCallback(data) {
       // error message
       createPicker();
     }
+
+    var stage = model.getRoot().get("stage");
+    stage.setBackgrounds(imageUrls);
   } 
   // var message = 'You picked: ' + url;
   // document.getElementById('result').innerHTML = message;
