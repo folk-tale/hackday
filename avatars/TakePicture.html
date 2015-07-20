@@ -6,25 +6,31 @@
   <link rel="stylesheet" href="TakePicture.css" type="text/css" media="all">
   <script src="TakePicture.js">
   </script>
-  <h1>
-    Take a picture by fitting your face in the circle.
-  </h1>
 </head>
 <body>
-<div class="contentarea wrapper">
-  <div class="camera">
-    <div class="output">
-      <img id="photo"> 
+  <div class="contentarea wrapper">
+    <h1>Add your face to your character and pick a color</h1>
+    <div class="camera">
+      <div class="output">
+        <img id="photo"> 
+      </div>
+      <img id="character_frame" src="dragon_blue_bkgd.png">
+      <video id="video">Video stream not available.</video>
     </div>
-    <div id="circle"></div>
-    <video id="video">Video stream not available.</video>
+    <div id="buttons">
+      <div id="bluebutton" class="colorbuttons"></div>
+      <div id="redbutton" class="colorbuttons"></div>
+      <div id="yellowbutton" class="colorbuttons"></div>
+      <div id="purplebutton" class="colorbuttons"></div>
+      <div id="takephotobutton">Take photo</div> 
+      <div id="retakebutton">Retake photo</div>
+      <div id="donebutton">I'm done!</div> 
+    </div>
+    <canvas id="canvas">
+    </canvas>
   </div>
-  <button id="startbutton">Take photo</button> 
-  <canvas id="canvas">
-  </canvas>
-  <a id="nextPage" href="attachBody.html">Next!</a>
-  <br></br>
-  <a id="retake" href="TakePicture.html">Retake photo</a>
 </div>
+
+
 </body>
 </html>
