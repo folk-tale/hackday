@@ -107,7 +107,7 @@
     }, false);
 
     donebutton.addEventListener('click', function(ev){
-      window.open("file:///../index.html","_self")
+      window.open("../index.html","_self")
       ev.preventDefault();
     }, false);
   
@@ -142,8 +142,9 @@
   function takepicture() {
     var context = canvas.getContext('2d');
     context.beginPath();
-    context.arc(200, 200, 0, 0, 2*Math.PI);
+    context.arc(200, 200, 50, 0, 2*Math.PI);
     context.stroke();
+    context.strokeStyle = 'blue';
     context.clip();
     if (width && height) {
       canvas.width = width;
@@ -157,8 +158,34 @@
       donebutton.style.display = 'block';
       retakebutton.style.display = 'block';
       takephotobutton.style.display = 'none';
-      sessionStorage.setItem("photoData", data);
-      sessionStorage.setItem("color", character_frame.src);
+      // sessionStorage.setItem("photoData", data);
+      // sessionStorage.setItem("color", character_frame.src);
+
+      var c = document.getElementById("canvas2");
+      var ctx = c.getContext("2d");
+      var photo_img = new Image();
+      var character_frame_img = new Image();
+      photo_img.src = data;
+      photo_img.onload = function() {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(190, 110, 93, 0, 2*Math.PI);
+        ctx.stroke();
+        ctx.strokeStyle = 'blue';
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(photo_img, -5, 25, 320, 240);
+        ctx.restore();
+         character_frame_img.src = character_frame.src;
+         character_frame_img.onload = function() {
+            ctx.drawImage(character_frame_img, 0, 0, 320, 449);
+            var img = c.toDataURL("image/png");
+            console.log("img: " + img);
+            console.log("img.src: " , img.src);
+            $("#test").append('<img src="' + img + '" width="320" height="449"/>');
+            sessionStorage.setItem("cmb", img);
+         }
+      };
     } else {
       clearphoto();
     }
