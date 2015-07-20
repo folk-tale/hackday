@@ -2,6 +2,10 @@ html, body {
   background: #F6F0E6;
   font-family: Arial, sans-serif;
   font-size: 14pt;
+  padding: 0px;
+  margin: 0px;
+  min-height: 100%;
+  position: relative;
 }
 
 h5 {
@@ -15,6 +19,14 @@ hr {
   border: 0px;
   margin: 2px 0px;
   background: #999999;
+}
+
+footer {
+  width: 100%;
+  background: #A6A096;
+  height: 130px;
+  margin-top: 50px;
+  bottom: 0px;
 }
 
 .backstage-container {
@@ -129,6 +141,20 @@ hr {
   position: absolute;
 }
 
+#invite-wrapper {
+  width: 800px;
+  margin: 0px auto;
+  padding: 20px;
+}
+
+#invite-link {
+  border: 1px solid #666;
+  background: #CCCCCC;
+  margin-top: 10px;
+  padding: 10px;
+  color: #999;
+  cursor: pointer;
+}
 
 #next-stage, #prev-stage {
   text-decoration: none;

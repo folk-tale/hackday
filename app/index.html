@@ -16,12 +16,6 @@
     <script src="scripts/jquery-ui.js"></script>
     <link rel="stylesheet" href="styles/jquery-ui.css" />
 
-    <!-- See http://jqueryui.com/draggable/ for examples and API -->
-    <<script src="scripts/photopicker.js"></script>
-
-    <!-- Google APIs -->
-    <script type="text/javascript" src="https://apis.google.com/js/api.js?onload=onApiLoad"></script>
-
   </head>
 
   <body>
@@ -46,9 +40,6 @@
         <div class="sidebyside" style="text-align:right">
           <button id="copy_button" class="button" onclick="copyButton()">
             Copy and Paste</button>
-          <div id="copy_info" class="info">
-            Press Control-C to copy text.<br>(Command-C on Mac.)
-          </div>
         </div>
         <div class="sidebyside">
           <button id="email_button" class="button" onclick="emailButton()">
@@ -91,15 +82,12 @@
           <h5>Search results</h5>
           <hr />
           <div class="results" id="content"></div>
-          <a onclick="window.open(window.location.href);return false;" target="_blank" href="#">new tab</a>
-          <button id="auth_button">Authorize</button>
-          <button id="test_button" class="visible">Test</button>
         </div> <!-- results-container -->
 
       </div> <!-- backstage-container -->
 
       <div class="stage-container">
-        <button onclick="pickRandomImage()">Click me</button>
+        <br />
         <div id="stage-inner">
           <div id="stage"></div>
           <div id="prev-stage">&lsaquo;</div>
@@ -108,6 +96,24 @@
       </div> <!-- stage-container -->
 
     </div> <!-- container -->
+
+    <footer>
+      <div id="invite-wrapper">
+        <div id="invite-text"></div>
+        <div id="invite-link"></div>
+        <script type="text/javascript">
+          var link = document.getElementById("invite-link");
+          link.textContent = window.location.href;
+          link.addEventListener("click", function() {
+
+          });
+          var people = ["Grandma", "Grandpa", "Mom", "Dad", "Auntie", "Uncle"];
+          var randomPerson = people[Math.floor(Math.random() * people.length)];
+          var text = document.getElementById("invite-text");
+          text.textContent = "Invite " + randomPerson + "! (click to copy link):";
+        </script>
+      </div>
+    </footer>
     
     <!-- Note: Order of scripts below is important!!! -->
 
@@ -124,6 +130,12 @@
 
     <!-- Speech processing -->
     <script src="scripts/speech.js"></script>
+
+    <!-- Photopicker for background images -->
+    <script src="scripts/photopicker.js"></script>
+
+    <!-- Google APIs -->
+    <script type="text/javascript" src="https://apis.google.com/js/api.js?onload=authorize"></script>
 
   </body>
 
