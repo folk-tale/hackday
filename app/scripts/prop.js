@@ -32,14 +32,14 @@ function authorize() {
       button.addEventListener('click', function () {
         realtimeUtils.authorize(function(response){
           // Invoke photo-picking process (see photopicker.js for def. of onApiLoad())
-          start(function() { return null; });
-          //onApiLoad();
+          //start(function() { return null; });
+          onApiLoad();
         }, true);
       });
     } else {
         // Invoke photo-picking process (see photopicker.js for def. of onApiLoad())
-        //onApiLoad();
-        start(function() { return null; });
+        onApiLoad();
+        // start(function() { return null; });
     }
   }, false);
 }
