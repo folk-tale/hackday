@@ -17,19 +17,21 @@
   var video = null;
   var canvas = null;
   var photo = null;
-  var startbutton = null;
+  var takephotobutton = null;
 
   function takePicture() {
     video = document.getElementById('video');
     canvas = document.getElementById('canvas');
     photo = document.getElementById('photo');
-    startbutton = document.getElementById('startbutton');
-    circle = document.getElementById('circle');
-    retake = document.getElementById('retake');
-    nextPage = document.getElementById('nextPage');
+    takephotobutton = document.getElementById('takephotobutton');
+    bluebutton = document.getElementById('bluebutton');
+    redbutton = document.getElementById('redbutton');
+    yellowbutton = document.getElementById('yellowbutton');
+    purplebutton = document.getElementById('purplebutton');
+    donebutton = document.getElementById('donebutton');
+    character_frame = document.getElementById('character_frame');
+    retake = document.getElementById('retakebutton');
     photoTaken = document.getElementsByClassName("photoTaken");
-    nextPage.style.display = 'none';
-    retake.style.display = 'none';
     if (photoTaken!= null) {
       for (i = 0; i < photoTaken.length; i++) {
         photoTaken[i].setAttribute('src', sessionStorage.getItem("photoData"));
@@ -70,11 +72,45 @@
       }
     }, false);
 
-    startbutton.addEventListener('click', function(ev){
+    takephotobutton.addEventListener('click', function(ev){
       takepicture();
       ev.preventDefault();
     }, false);
-    
+
+    bluebutton.addEventListener('click', function(ev){
+      character_frame.src="dragon_blue_bkgd.png";
+      ev.preventDefault();
+    }, false);
+
+    redbutton.addEventListener('click', function(ev){
+      character_frame.src="dragon_red_bkgd.png";
+      ev.preventDefault();
+    }, false);
+
+    yellowbutton.addEventListener('click', function(ev){
+      character_frame.src="dragon_yellow_bkgd.png";
+      ev.preventDefault();
+    }, false);
+
+    purplebutton.addEventListener('click', function(ev){
+      character_frame.src="dragon_purple_bkgd.png";
+      ev.preventDefault();
+    }, false);
+
+    retakebutton.addEventListener('click', function(ev){
+      clearphoto();
+      photo.style.display = 'none';
+      video.style.display = 'inline';
+      retake.style.display = 'none';
+      takephotobutton.style.display = 'block';
+      ev.preventDefault();
+    }, false);
+
+    donebutton.addEventListener('click', function(ev){
+      window.open("file:///../index.html","_self")
+      ev.preventDefault();
+    }, false);
+  
     clearphoto();
   }
   function startup() {
@@ -113,16 +149,16 @@
       canvas.width = width;
       canvas.height = height;
       canvas.style.borderRadius = '50%';
-      context.drawImage(video, -60, 0, 300, 200);
+      context.drawImage(video, 0, -22, 200, 200);
       var data = canvas.toDataURL('image/png');
       photo.setAttribute('src', data);
       photo.style.display = 'inline';
       video.style.display = 'none';
-      circle.style.display = 'none';
-      nextPage.style.display = 'inline';
-      retake.style.display = 'inline';
-      startbutton.style.display = 'none';
+      donebutton.style.display = 'block';
+      retakebutton.style.display = 'block';
+      takephotobutton.style.display = 'none';
       sessionStorage.setItem("photoData", data);
+      sessionStorage.setItem("color", character_frame.src);
     } else {
       clearphoto();
     }

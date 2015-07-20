@@ -1,0 +1,36 @@
+<!doctype html>
+<html id = "take-picture">
+<head>
+  <title>Folktale: Pick Your Character</title>
+  <meta charset='utf-8'>
+  <link rel="stylesheet" href="TakePicture.css" type="text/css" media="all">
+  <script src="TakePicture.js">
+  </script>
+</head>
+<body>
+  <div class="contentarea wrapper">
+    <h1>Add your face to your character and pick a color</h1>
+    <div class="camera">
+      <div class="output">
+        <img id="photo"> 
+      </div>
+      <img id="character_frame" src="dragon_blue_bkgd.png">
+      <video id="video">Video stream not available.</video>
+    </div>
+    <div id="buttons">
+      <div id="bluebutton" class="colorbuttons"></div>
+      <div id="redbutton" class="colorbuttons"></div>
+      <div id="yellowbutton" class="colorbuttons"></div>
+      <div id="purplebutton" class="colorbuttons"></div>
+      <div id="takephotobutton">Take photo</div> 
+      <div id="retakebutton">Retake photo</div>
+      <div id="donebutton">I'm done!</div> 
+    </div>
+    <canvas id="canvas">
+    </canvas>
+  </div>
+</div>
+
+
+</body>
+</html>
