@@ -154,13 +154,14 @@
       donebutton.style.display = 'block';
       retakebutton.style.display = 'block';
       takephotobutton.style.display = 'none';
-      sessionStorage.setItem("photoData", data);
+      // sessionStorage.setItem("photoData", data);
       sessionStorage.setItem("color", character_frame.src);
 
       var c = document.getElementById("canvas2");
       var ctx = c.getContext("2d");
       var photo_img = new Image();
       var character_frame_img = new Image();
+      character_frame_img.crossOrigin = "Anonymous";
       photo_img.crossOrigin = "Anonymous";
       photo_img.src = data;
       photo_img.onload = function() {
