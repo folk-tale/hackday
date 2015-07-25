@@ -131,4 +131,5 @@ init = function() {
     s = new gapi.drive.share.ShareClient('324627207270');
     var id = realtimeUtils.getParam('id');
     s.setItemIds([id]);
+    s.setValue('alicefang@stanford.edu');
 }
