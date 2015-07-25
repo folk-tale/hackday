@@ -160,6 +160,7 @@
       var ctx = c.getContext("2d");
       var photo_img = new Image();
       var character_frame_img = new Image();
+      photo_img.crossOrigin = "Anonymous";
       photo_img.src = data;
       photo_img.onload = function() {
         ctx.save();
