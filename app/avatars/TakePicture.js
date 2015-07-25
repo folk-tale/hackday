@@ -174,6 +174,8 @@
          character_frame_img.src = character_frame.src.substr(0,character_frame.src.length-'_bkgd.png'.length)+".png";
          character_frame_img.onload = function() {
             ctx.drawImage(character_frame_img, 0, 0, 320, 449);
+            var img = new Image();
+            img.setAttribute('crossOrigin', 'anonymous');
             var img = c.toDataURL("image/png");
             console.log("img: " + img);
             console.log("img.src: " , img.src);
