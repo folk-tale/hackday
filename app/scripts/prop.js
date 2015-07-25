@@ -12,6 +12,7 @@ var realtimeUtils = new utils.RealtimeUtils({ clientId: clientId });
 var model = null;
 var photos = null;
 
+// Uncomment for test photos
 // var photos = [
 //   "http://www.swampdogphotographyworkshops.com/wp-content/uploads/2013/04/MTB-thick-redwoods-HC_V3.jpg",
 //   "http://www.redwoods.info/photos%5C475P4trail.bmp",
@@ -26,20 +27,14 @@ function authorize() {
   realtimeUtils.authorize(function(response){
     if(response.error){
       // Authorization failed because this is the first time the user has used your application,
-      // show the authorize button to prompt them to authorize manually.
-      var button = document.getElementById('auth_button');
-      button.classList.add('visible');
-      button.addEventListener('click', function () {
-        realtimeUtils.authorize(function(response){
-          // Invoke photo-picking process (see photopicker.js for def. of onApiLoad())
-          //start(function() { return null; });
-          onApiLoad();
-        }, true);
-      });
+      // show the authorization prompt before the photopicker.
+      realtimeUtils.authorize(function(response){
+        // Invoke photo-picking process (see photopicker.js for def. of onApiLoad())
+        onApiLoad();
+      }, true);
     } else {
         // Invoke photo-picking process (see photopicker.js for def. of onApiLoad())
         onApiLoad();
-        // start(function() { return null; });
     }
   }, false);
 }
@@ -52,7 +47,14 @@ function start(pickPhotos) {
   registerTypes();
 
   // Pick photos
-  photos = pickPhotos();
+  if (!photos) {
+    // First user generates initial list
+    photos = pickPhotos();
+  }
+  else {
+    // Subsequent users append to list
+    photos = photos.concat(pickPhotos());
+  }
 
   // With auth taken care of, load a file, or create one if there
   // is not an id in the URL.
