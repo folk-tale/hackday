@@ -1,7 +1,7 @@
-var clientId = '324627207270-ojamt80hdehm8dkup55o8cih0ag4d5j8.apps.googleusercontent.com';
+//var clientId = '324627207270-ojamt80hdehm8dkup55o8cih0ag4d5j8.apps.googleusercontent.com';
 
 // Ben-han's client ID
-//var clientId = '355588130388-q160ev44v09s1h2ka76fun7k1cj8ptat.apps.googleusercontent.com';
+var clientId = '355588130388-q160ev44v09s1h2ka76fun7k1cj8ptat.apps.googleusercontent.com';
 
 if (!/^([0-9])$/.test(clientId[0])) {
   alert('Invalid Client ID - did you forget to insert your application Client ID?');
@@ -27,20 +27,14 @@ function authorize() {
   realtimeUtils.authorize(function(response){
     if(response.error){
       // Authorization failed because this is the first time the user has used your application,
-      // show the authorize button to prompt them to authorize manually.
-      var button = document.getElementById('auth_button');
-      button.classList.add('visible');
-      button.addEventListener('click', function () {
-        realtimeUtils.authorize(function(response){
-          // Invoke photo-picking process (see photopicker.js for def. of onApiLoad())
-          start(function() { return null; });
-          //onApiLoad();
-        }, true);
-      });
+      // show the authorization prompt before the photopicker.
+      realtimeUtils.authorize(function(response){
+        // Invoke photo-picking process (see photopicker.js for def. of onApiLoad())
+        onApiLoad();
+      }, true);
     } else {
         // Invoke photo-picking process (see photopicker.js for def. of onApiLoad())
-        //onApiLoad();
-        start(function() { return null; });
+        onApiLoad();
     }
   }, false);
 }
