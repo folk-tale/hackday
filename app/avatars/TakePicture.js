@@ -147,6 +147,7 @@
       canvas.style.borderRadius = '50%';
       context.drawImage(video, 0, -22, 200, 200);
       var data = canvas.toDataURL('image/png');
+      photo.crossOrigin = "Anonymous";
       photo.setAttribute('src', data);
       photo.style.display = 'inline';
       video.style.display = 'none';
