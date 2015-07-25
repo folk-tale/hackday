@@ -1,3 +1,8 @@
+function getURLParameter(name) {
+  return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
+}
+
+
 (function() {
   // The width and height of the captured photo. We will set the
   // width to the value defined here, but the height will be
@@ -107,7 +112,11 @@
     }, false);
 
     donebutton.addEventListener('click', function(ev){
-      window.open("../index.html","_self")
+      var id = getURLParameter('id');
+      if (id)
+        window.open("../index.html?id=" + id,"_self")
+      else 
+        window.open("../index.html", "_self")
       ev.preventDefault();
     }, false);
   
@@ -147,14 +156,12 @@
       canvas.style.borderRadius = '50%';
       context.drawImage(video, 0, -22, 200, 200);
       var data = canvas.toDataURL('image/png');
-      //photo.crossOrigin = "Anonymous";
       photo.setAttribute('src', data);
       photo.style.display = 'inline';
       video.style.display = 'none';
       donebutton.style.display = 'block';
       retakebutton.style.display = 'block';
       takephotobutton.style.display = 'none';
-      // sessionStorage.setItem("photoData", data);
       sessionStorage.setItem("color", character_frame.src);
 
       var c = document.getElementById("canvas2");
@@ -162,7 +169,6 @@
       var photo_img = new Image();
       var character_frame_img = new Image();
       character_frame_img.crossOrigin = "Anonymous";
-      //photo_img.crossOrigin = "Anonymous";
       photo_img.src = data;
       photo_img.onload = function() {
         ctx.save();
@@ -178,7 +184,6 @@
          character_frame_img.onload = function() {
             ctx.drawImage(character_frame_img, 0, 0, 320, 449);
             var img = new Image();
-            //img.crossOrigin = "Anonymous";
             var img = c.toDataURL("image/png");
             console.log("img: " + img);
             console.log("img.src: " , img.src);

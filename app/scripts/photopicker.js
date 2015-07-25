@@ -17,6 +17,7 @@ var oauthToken;
 function onApiLoad() {
   gapi.load('auth', {'callback': onAuthApiLoad});
   gapi.load('picker', {'callback': onPickerApiLoad});
+  gapi.load('drive-share', init);
 }
 
 function onAuthApiLoad() {
@@ -124,4 +125,10 @@ function pickerCallback(data) {
     // Start function for Realtime API
     start(function() { return null; });
   }
+}
+
+init = function() {
+    s = new gapi.drive.share.ShareClient('324627207270');
+    var id = realtimeUtils.getParam('id');
+    s.setItemIds([id]);
 }
