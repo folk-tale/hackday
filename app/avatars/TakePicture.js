@@ -175,7 +175,7 @@
          character_frame_img.onload = function() {
             ctx.drawImage(character_frame_img, 0, 0, 320, 449);
             var img = new Image();
-            img.setAttribute('crossOrigin', 'anonymous');
+            img.crossOrigin = "Anonymous";
             var img = c.toDataURL("image/png");
             console.log("img: " + img);
             console.log("img.src: " , img.src);
