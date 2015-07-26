@@ -328,12 +328,13 @@ function registerTypes(model) {
     // Gets called whenever the stage is modified
     // (E.g. page flip)
     Stage.prototype.update = function(event) {
-      var stage = event.target;
-      // Show the active scene and hide all other scenes
-      /*for (var i = 0; i < stage.scenes.length; i++) {
-        var scene = stage.scenes[i];
-        scene.active = (i == stage.currentBackgroundIndex);
-      }*/
+      if (!event.isLocal) {
+        var stage = event.target;
+        // Show the active scene and hide all other scenes
+        for (var i = 0; i < stage.scenes.length; i++) {
+          stage.scenes[i].active = (i == stage.currentBackgroundIndex);
+        }
+      }
     }
 
     // Flips forward to the next page
