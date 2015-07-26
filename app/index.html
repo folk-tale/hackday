@@ -100,17 +100,35 @@
     <footer>
       <div id="invite-wrapper">
         <div id="invite-text"></div>
+        <!-- TODO: Make this a textarea for select to work -->
         <div id="invite-link"></div>
         <script type="text/javascript">
-          var link = document.getElementById("invite-link");
-          link.textContent = window.location.href;
-          link.addEventListener("click", function() {
+          // Callback function invoked once the user has authorized
+          // (We can't get the share link until the user has authorized)
+          function userDidAuthorize() {
+            var link = document.getElementById("invite-link");
+            link.textContent = window.location.href;
+            link.addEventListener("click", function() {
 
+            });
+            var people = ["Grandma", "Grandpa", "Mom", "Dad", "Auntie", "Uncle"];
+            var randomPerson = people[Math.floor(Math.random() * people.length)];
+            var text = document.getElementById("invite-text");
+            text.textContent = "Invite " + randomPerson + "! (click to copy link):";
+          }
+          // Copy-on-click (uses some *very* new features....support might
+          // not be widespread but as long as you're on Chrome you'll prolly
+          // be okay.)
+          document.querySelector('#invite-link').addEventListener("click", function() {
+            this.select();
+            try {
+              var successful = document.execCommand('copy');
+              var msg = successful ? 'successful' : 'unsuccessful';
+              console.log('Copying text command was ' + msg);
+            } catch (err) {
+              console.log('Oops, unable to copy');
+            }
           });
-          var people = ["Grandma", "Grandpa", "Mom", "Dad", "Auntie", "Uncle"];
-          var randomPerson = people[Math.floor(Math.random() * people.length)];
-          var text = document.getElementById("invite-text");
-          text.textContent = "Invite " + randomPerson + "! (click to copy link):";
         </script>
       </div>
     </footer>

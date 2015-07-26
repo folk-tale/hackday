@@ -1,7 +1,7 @@
-var clientId = '324627207270-ojamt80hdehm8dkup55o8cih0ag4d5j8.apps.googleusercontent.com';
+//var clientId = '324627207270-ojamt80hdehm8dkup55o8cih0ag4d5j8.apps.googleusercontent.com';
 
 // Ben-han's client ID
-//var clientId = '355588130388-q160ev44v09s1h2ka76fun7k1cj8ptat.apps.googleusercontent.com';
+var clientId = '355588130388-q160ev44v09s1h2ka76fun7k1cj8ptat.apps.googleusercontent.com';
 
 if (!/^([0-9])$/.test(clientId[0])) {
   alert('Invalid Client ID - did you forget to insert your application Client ID?');
@@ -20,21 +20,23 @@ var photos = null;
 // ];
 
 // This is automatically invoked once Google APIs have finished loading
-// (We pass a parameter to the Google API library indicating this is the
-// "on finished" callback function)
+// (We pass a parameter to the Google API library indicating that authorize 
+// is the "on finished" callback function)
 function authorize() {
   // Attempt to authorize
   realtimeUtils.authorize(function(response){
-    if(response.error){
+    if (response.error){
       // Authorization failed because this is the first time the user has used your application,
       // show the authorization prompt before the photopicker.
       realtimeUtils.authorize(function(response){
         // Invoke photo-picking process (see photopicker.js for def. of onApiLoad())
         onApiLoad();
+        userDidAuthorize();
       }, true);
     } else {
         // Invoke photo-picking process (see photopicker.js for def. of onApiLoad())
         onApiLoad();
+        userDidAuthorize();
     }
   }, false);
 }
@@ -42,19 +44,14 @@ function authorize() {
 // pickPhotos is a callback function that should return a list of URLs
 // of photos to use as background images
 function start(pickPhotos) {
-
-  // Register custom types
+  // Register custom types.
+  // Note this must happen BEFORE the shared document is loaded.
   registerTypes();
 
-  // Pick photos
-  if (!photos) {
-    // First user generates initial list
-    photos = pickPhotos();
-  }
-  else {
-    // Subsequent users append to list
-    photos = photos.concat(pickPhotos());
-  }
+  // Pick photos:
+  // If it exists, we tack on what was chosen.
+  // If it doesn't exist, photos becomes what was chosen.
+  photos = (photos) ? photos.concat(pickPhotos()) : pickPhotos();
 
   // With auth taken care of, load a file, or create one if there
   // is not an id in the URL.
@@ -72,13 +69,10 @@ function start(pickPhotos) {
 }
 
 // The first time a file is opened, it must be initialized with the
-// document structure. 
+// document structure. Any one-time setup should go here.
 function onFileInitialize(model) {
-  // Any one-time setup should go here
-  // For ex: Initialize the stage (we only have one stage
-  // across all collaborators)
-
-  var stage = model.create(Stage, "stage-inner", "next-stage", "prev-stage", photos);
+  // 1. Initialize the stage
+  var stage = model.create(Stage, "stage-inner", "next-stage", "prev-stage", photos, model);
   model.getRoot().set("stage", stage);
 }
 
@@ -90,13 +84,17 @@ function onFileLoaded(doc) {
   // Load existing objects
   var keys = model.getRoot().keys();
   for (var i = 0; i < keys.length; i++) {
-    var prop = model.getRoot().get(keys[i]);
-
-    // There's a gotcha here...
-    // This only works because every custom class we've registered
-    // uses "onload" for the onLoaded event. I can't figure out
-    // how to call the onLoaded event, so this works by polymorphism.
-    prop.onload();
+    if (keys[i] != "searchString") {
+      var prop = model.getRoot().get(keys[i]);
+      // There's a gotcha here...
+      // This only works because every custom class we've registered
+      // uses "onload" for the onLoaded event. I can't figure out
+      // how to call the onLoaded event, so this works by polymorphism.
+      try {
+        prop.onload();
+      }
+      catch (err) {}
+    }
   }
 }
 
@@ -207,28 +205,98 @@ function registerTypes(model) {
     gapi.drive.realtime.custom.setOnLoaded(Prop, Prop.prototype.onload);
   }
 
+  function registerScene() {
+    Scene = function() {}
+    Scene.prototype.key = gapi.drive.realtime.custom.collaborativeField('key');
+    Scene.prototype.active = gapi.drive.realtime.custom.collaborativeField('active');
+    Scene.prototype.backgroundURL = gapi.drive.realtime.custom.collaborativeField('backgroundURL');
+
+    Scene.prototype.init = function(id, url, model) {
+      this.index = id;
+      this.active = false;
+      this.backgroundURL = url;
+
+      // Collaborative string updates are handled automatically so we don't
+      // have to mark them as a collaborativeField above, like we do with other
+      // properties.
+      this.key = "_scene_description_" + id;
+      var description = model.createString();
+      description.setText(this.key);
+      model.getRoot().set(this.key, description);
+    }
+
+    // This gets called when somebody else joins the session
+    // and needs to create the current scene
+    Scene.prototype.onload = function() {
+      this.active ? this.show() : this.stash();
+      this.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, this.update);
+    }
+
+    // This gets called when a scene goes from active to not
+    // active, or vice versa. Basically, on a scene change.
+    Scene.prototype.update = function(event) {
+      var scene = event.target;
+      scene.active ? scene.show() : scene.stash();
+    }
+
+    // Hides this scene - remove props
+    Scene.prototype.stash = function() {
+      // Right now, nothing to do
+      // Later: remove props
+    }
+
+    // Show this scene - add props back, bind description to search field
+    Scene.prototype.show = function() {
+      // Bind current scene description to search field
+      var model = gapi.drive.realtime.custom.getModel(this);
+      var description = model.getRoot().get(this.key);
+      var searchField = document.getElementById("queryfield");
+      if (Scene.prototype.binding) {
+        Scene.prototype.binding.unbind();
+        delete Scene.prototype.binding;
+      }
+      Scene.prototype.binding = gapi.drive.realtime.databinding.bindString(description, searchField);
+
+      // Update stage background
+      var stage = document.getElementById("stage-inner");
+      stage.style.background = '#FBFBFB url("' + this.backgroundURL + '") no-repeat';
+      stage.style.backgroundSize = 'cover';
+    }
+
+    // Register Scene class with Realtime
+    gapi.drive.realtime.custom.registerType(Scene, 'Scene');
+    gapi.drive.realtime.custom.setInitializer(Scene, Scene.prototype.init);
+    gapi.drive.realtime.custom.setOnLoaded(Scene, Scene.prototype.onload);
+  }
+
   function registerStage() {
     Stage = function() {}
-    Stage.prototype.id = gapi.drive.realtime.custom.collaborativeField('id');
+    Stage.prototype.stageId = gapi.drive.realtime.custom.collaborativeField('stageId');
     Stage.prototype.forwardId = gapi.drive.realtime.custom.collaborativeField('forwardId');
     Stage.prototype.backwardId = gapi.drive.realtime.custom.collaborativeField('backwardId');
-    Stage.prototype.backgroundList = gapi.drive.realtime.custom.collaborativeField('backgroundList');
+    Stage.prototype.backgroundCount = gapi.drive.realtime.custom.collaborativeField('backgroundCount');
     Stage.prototype.currentBackgroundIndex = gapi.drive.realtime.custom.collaborativeField('currentBackgroundIndex');
-    
+
     // One-time init for a stage
-    Stage.prototype.init = function(stageID, forwardButtonID, backwardButtonID, backgrounds) {
-      this.id = stageID;
-      this.forwardId = forwardButtonID;
-      this.backwardId = backwardButtonID;
-      this.backgroundList = backgrounds;
+    Stage.prototype.init = function(stageId, forwardId, backwardId, backgrounds, model) {
+      this.stageId = stageId;
+      this.forwardId = forwardId;
+      this.backwardId = backwardId;
+      this.backgroundCount = backgrounds.length;
       this.currentBackgroundIndex = 0;
+
+      // Create a Scene for every available background
+      for (var i = 0; i < this.backgroundCount; i++) {
+        var scene = model.create(Scene, i, backgrounds[i], model);
+        model.getRoot().set("_scene_" + i, scene);
+      }
     }
 
     // This gets called when somebody else joins the session
     // and needs to create and sync the stage
     Stage.prototype.onload = function() {
       if (!this.elem) {
-        this.elem = document.getElementById(this.id);
+        this.elem = document.getElementById(this.stageId);
         this.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, this.update);
 
         // Wire up forward button
@@ -243,38 +311,43 @@ function registerTypes(model) {
         backwardButton.addEventListener("click", function() {
           stage.flipBackwards();
         });
+
+        // Locate all scene objects
+        var model = gapi.drive.realtime.custom.getModel(this);
+        this.scenes = [];
+        for (var i = 0; i < this.backgroundCount; i++) {
+          this.scenes.push(model.getRoot().get("_scene_" + i));
+        }
       }
-      this.elem.style.background = '#FBFBFB url("' + this.backgroundList[this.currentBackgroundIndex] + '") no-repeat';
-      this.elem.style.backgroundSize = 'cover';
+      // Show the active scene and hide all other scenes
+      for (var i = 0; i < this.scenes.length; i++) {
+        this.scenes[i].active = (i == this.currentBackgroundIndex);
+      }
     }
 
     // Gets called whenever the stage is modified
     // (E.g. page flip)
     Stage.prototype.update = function(event) {
       var stage = event.target;
-      stage.elem.style.background = '#FBFBFB url("' + stage.backgroundList[stage.currentBackgroundIndex] + '") no-repeat';
-      stage.elem.style.backgroundSize = 'cover';
+      // Show the active scene and hide all other scenes
+      /*for (var i = 0; i < stage.scenes.length; i++) {
+        var scene = stage.scenes[i];
+        scene.active = (i == stage.currentBackgroundIndex);
+      }*/
     }
 
     // Flips forward to the next page
     Stage.prototype.flipForward = function() {
-      var testCopy = this.currentBackgroundIndex + 1;
-      if (testCopy < this.backgroundList.length) {
+      if (this.currentBackgroundIndex + 1 < this.backgroundCount) {
         this.currentBackgroundIndex++;
       }
     }
 
     // Flips back to the previous page
     Stage.prototype.flipBackwards = function() {
-      var testCopy = this.currentBackgroundIndex - 1;
-      if (testCopy >= 0 && this.backgroundList.length > 0) {
+      if (this.currentBackgroundIndex - 1 >= 0 && this.backgroundCount > 0) {
         this.currentBackgroundIndex--;
       }
-    }
-
-    // Set backgrounds
-    Stage.prototype.setBackgrounds = function(backgrounds) {
-      this.backgroundList = backgrounds;
     }
 
     // Register stage class with Realtime
@@ -284,6 +357,7 @@ function registerTypes(model) {
   }
 
   registerProps();
+  registerScene();
   registerStage();
 }
 

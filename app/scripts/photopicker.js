@@ -7,6 +7,9 @@ var developerKey = 'AIzaSyAjOXZ5Ual4zaYrdJkxu06pp5ARRpPEqEg';
 // The Client ID obtained from the Google Developers Console. Replace with your own Client ID.
 var clientId = "324627207270-ojamt80hdehm8dkup55o8cih0ag4d5j8.apps.googleusercontent.com"
 
+// Ben-han's client ID
+//var clientId = '355588130388-q160ev44v09s1h2ka76fun7k1cj8ptat.apps.googleusercontent.com';
+
 // Scope to use to access user's photos.
 var scope = ['https://www.googleapis.com/auth/drive'];
 
@@ -111,8 +114,7 @@ function pickerCallback(data) {
       // document.getElementById('result').innerHTML = message;
 
       // Start function for Realtime API
-      start(function() { return imageUrls; });
-    
+      start(function() { return imageUrls; });  
     }
     // Error - user didn't pick enough pictures 
     else {
