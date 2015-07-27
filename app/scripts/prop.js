@@ -92,7 +92,7 @@ function registerTypes(model) {
 
   // Prop class implementation
   function registerProps() {
-    Prop = function() {}
+    Prop = function() { /* See Realtime-friendly init function below */ }
     Prop.prototype.id = gapi.drive.realtime.custom.collaborativeField('id');
     Prop.prototype.startX = gapi.drive.realtime.custom.collaborativeField('startX');
     Prop.prototype.startY = gapi.drive.realtime.custom.collaborativeField('startY');
@@ -198,27 +198,21 @@ function registerTypes(model) {
   }
 
   function registerScene() {
-    Scene = function() {}
+    Scene = function() { /* See Realtime-friendly init function below */ }
     Scene.prototype.key = gapi.drive.realtime.custom.collaborativeField('key');
     Scene.prototype.props = gapi.drive.realtime.custom.collaborativeField('props');
     Scene.prototype.active = gapi.drive.realtime.custom.collaborativeField('active');
+    Scene.prototype.description = gapi.drive.realtime.custom.collaborativeField('description');
     Scene.prototype.backgroundURL = gapi.drive.realtime.custom.collaborativeField('backgroundURL');
 
     Scene.prototype.init = function(id, url, model) {
       this.index = id;
       this.active = false;
       this.backgroundURL = url;
-
-      // Collaborative string updates are handled automatically so we don't
-      // have to mark them as a collaborativeField above, like we do with other
-      // properties.
-      this.key = "_scene_description_" + id;
-      var description = model.createString();
-      description.setText(this.key);
-      model.getRoot().set(this.key, description);
-
-      // Same goes for collaborative list
       this.props = model.createList();
+
+      this.description = model.createString();
+      this.description.setText("_scene_description_" + id);
     }
 
     // Adds a prop (by CSS ID) to this scene
@@ -251,14 +245,12 @@ function registerTypes(model) {
     // Show this scene - add props back, bind description to search field
     Scene.prototype.show = function() {
       // Bind current scene description to search field
-      var model = gapi.drive.realtime.custom.getModel(this);
-      var description = model.getRoot().get(this.key);
       var searchField = document.getElementById("queryfield");
       if (Scene.prototype.binding) {
         Scene.prototype.binding.unbind();
         delete Scene.prototype.binding;
       }
-      Scene.prototype.binding = gapi.drive.realtime.databinding.bindString(description, searchField);
+      Scene.prototype.binding = gapi.drive.realtime.databinding.bindString(this.description, searchField);
 
       // Update stage background
       var stage = document.getElementById("stage-inner");
@@ -279,7 +271,7 @@ function registerTypes(model) {
   }
 
   function registerStage() {
-    Stage = function() {}
+    Stage = function() { /* See Realtime-friendly init function below */ }
     Stage.prototype.stageId = gapi.drive.realtime.custom.collaborativeField('stageId');
     Stage.prototype.forwardId = gapi.drive.realtime.custom.collaborativeField('forwardId');
     Stage.prototype.backwardId = gapi.drive.realtime.custom.collaborativeField('backwardId');
