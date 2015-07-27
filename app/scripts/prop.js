@@ -200,6 +200,7 @@ function registerTypes(model) {
   function registerScene() {
     Scene = function() {}
     Scene.prototype.key = gapi.drive.realtime.custom.collaborativeField('key');
+    Scene.prototype.props = gapi.drive.realtime.custom.collaborativeField('props');
     Scene.prototype.active = gapi.drive.realtime.custom.collaborativeField('active');
     Scene.prototype.backgroundURL = gapi.drive.realtime.custom.collaborativeField('backgroundURL');
 
@@ -215,6 +216,14 @@ function registerTypes(model) {
       var description = model.createString();
       description.setText(this.key);
       model.getRoot().set(this.key, description);
+
+      // Same goes for collaborative list
+      this.props = model.createList();
+    }
+
+    // Adds a prop (by CSS ID) to this scene
+    Scene.prototype.addProp = function(prop) {
+      this.props.push(prop);
     }
 
     // This gets called when somebody else joins the session
@@ -233,8 +242,10 @@ function registerTypes(model) {
 
     // Hides this scene - remove props
     Scene.prototype.stash = function() {
-      // Right now, nothing to do
-      // Later: remove props
+      for (var i = 0; i < this.props.length; i++) {
+        var prop = document.getElementById(this.props.get(i));
+        prop.style.display = "none";
+      }
     }
 
     // Show this scene - add props back, bind description to search field
@@ -253,6 +264,12 @@ function registerTypes(model) {
       var stage = document.getElementById("stage-inner");
       stage.style.background = '#FBFBFB url("' + this.backgroundURL + '") no-repeat';
       stage.style.backgroundSize = 'cover';
+
+      // Show owned props
+      for (var i = 0; i < this.props.length; i++) {
+        var prop = document.getElementById(this.props.get(i));
+        prop.style.display = "block";
+      }
     }
 
     // Register Scene class with Realtime
@@ -315,6 +332,11 @@ function registerTypes(model) {
       for (var i = 0; i < this.scenes.length; i++) {
         this.scenes[i].active = (i == this.currentBackgroundIndex);
       }
+    }
+
+    // Gets the current scene on the stage
+    Stage.prototype.currentScene = function() {
+      return this.scenes[this.currentBackgroundIndex];
     }
 
     // Gets called whenever the stage is modified
@@ -400,8 +422,15 @@ function makeDraggableElement(url, id, additionalClass) {
  * propURL (string) - image URL for the prop
  */
 function addProp(propID, propX, propY, propWidth, propHeight, propURL) {
+  // Create prop
   var prop = model.create(Prop, propID, propX, propY, propWidth, propHeight, propURL);
   model.getRoot().set(propID, prop);
+
+  // Add prop to current scene
+  var stage = model.getRoot().get("stage");
+  var currentScene = stage.currentScene();
+  currentScene.addProp(propID);
+
   return prop;
 }
 
