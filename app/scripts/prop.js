@@ -275,35 +275,29 @@ function registerTypes(model) {
     Stage.prototype.stageId = gapi.drive.realtime.custom.collaborativeField('stageId');
     Stage.prototype.forwardId = gapi.drive.realtime.custom.collaborativeField('forwardId');
     Stage.prototype.backwardId = gapi.drive.realtime.custom.collaborativeField('backwardId');
-    Stage.prototype.backgroundCount = gapi.drive.realtime.custom.collaborativeField('backgroundCount');
-    Stage.prototype.currentBackgroundIndex = gapi.drive.realtime.custom.collaborativeField('currentBackgroundIndex');
+    Stage.prototype.sceneIndex = gapi.drive.realtime.custom.collaborativeField('currentBackgroundIndex');
+    Stage.prototype.scenes = gapi.drive.realtime.custom.collaborativeField('scenes');
 
     // One-time init for a stage
     Stage.prototype.init = function(stageId, forwardId, backwardId, backgrounds, model) {
       this.stageId = stageId;
       this.forwardId = forwardId;
       this.backwardId = backwardId;
-      this.backgroundCount = backgrounds.length;
-      this.currentBackgroundIndex = 0;
+      this.sceneIndex = 0;
+      this.scenes = model.createList();
 
       // Create a Scene for every available background
-      for (var i = 0; i < this.backgroundCount; i++) {
+      for (var i = 0; i < backgrounds.length; i++) {
         var scene = model.create(Scene, i, backgrounds[i], model);
         model.getRoot().set("_scene_" + i, scene);
+        this.scenes.push(scene);
       }
     }
 
     // This gets called when somebody else joins the session
     // and needs to create and sync the stage
     Stage.prototype.onload = function() {
-      if (!this.scenes) {
-        // Locate all scene objects owned by this stage
-        var model = gapi.drive.realtime.custom.getModel(this);
-        this.scenes = [];
-        for (var i = 0; i < this.backgroundCount; i++) {
-          this.scenes.push(model.getRoot().get("_scene_" + i));
-        }
-
+      if (!Scene.prototype.didSetup) {
         // Wire up forward button
         var stage = this;
         var forwardButton = document.getElementById(this.forwardId);
@@ -319,16 +313,18 @@ function registerTypes(model) {
 
         // Register update function
         this.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, this.update);
+
+        Scene.prototype.didSetup = true;
       }
       // Show the active scene and hide all other scenes
       for (var i = 0; i < this.scenes.length; i++) {
-        this.scenes[i].active = (i == this.currentBackgroundIndex);
+        this.scenes.get(i).active = (i == this.sceneIndex);
       }
     }
 
     // Gets the current scene on the stage
     Stage.prototype.currentScene = function() {
-      return this.scenes[this.currentBackgroundIndex];
+      return this.scenes.get(this.sceneIndex);
     }
 
     // Gets called whenever the stage is modified
@@ -337,22 +333,22 @@ function registerTypes(model) {
       if (!event.isLocal) {
         var stage = event.target;
         for (var i = 0; i < stage.scenes.length; i++) {
-          stage.scenes[i].active = (i == stage.currentBackgroundIndex);
+          stage.scenes.get(i).active = (i == stage.sceneIndex);
         }
       }
     }
 
     // Flips forward to the next page
     Stage.prototype.flipForward = function() {
-      if (this.currentBackgroundIndex + 1 < this.backgroundCount) {
-        this.currentBackgroundIndex++;
+      if (this.sceneIndex + 1 < this.scenes.length) {
+        this.sceneIndex++;
       }
     }
 
     // Flips back to the previous page
     Stage.prototype.flipBackwards = function() {
-      if (this.currentBackgroundIndex - 1 >= 0 && this.backgroundCount > 0) {
-        this.currentBackgroundIndex--;
+      if (this.sceneIndex - 1 >= 0 && this.scenes.length > 0) {
+        this.sceneIndex--;
       }
     }
 
