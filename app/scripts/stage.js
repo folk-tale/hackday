@@ -88,7 +88,7 @@ $("#content").droppable({
     }
 
     // No longer needs to be synchronized, so:
-    props[$ui.draggable.id].delete();
-    delete props[$ui.draggable.id];
+    props[ui.draggable[0].id].delete();
+    delete props[ui.draggable[0].id];
   }
 });
