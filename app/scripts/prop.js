@@ -12,6 +12,7 @@ var realtimeUtils = new utils.RealtimeUtils({ clientId: clientId });
 
 var model = null;
 var photos = null;
+var firstLoad = false;
 
 // This is automatically invoked once Google APIs have finished loading
 // (We pass a parameter to the Google API library indicating that authorize 
@@ -68,6 +69,7 @@ function onFileInitialize(model) {
   // Initialize the stage
   var stage = model.create(Stage, "stage-inner", "next-stage", "prev-stage", photos, model);
   model.getRoot().set("stage", stage);
+  firstLoad = true;
 }
 
 // After a file has been initialized and loaded, we can access the
@@ -85,6 +87,12 @@ function onFileLoaded(doc) {
     // Only our custom objects will have onload() defined,
     // so we can catch and ignore errors for default objects
     catch (err) {}
+  }
+
+  // Allow new users to contribute photos as well
+  if (!firstLoad) {
+    var stage = model.getRoot().get("stage");
+    stage.addScenes(photos);
   }
 }
 
@@ -108,8 +116,8 @@ function registerTypes(model) {
     // id (string) - CSS id of the DOM element
     // left (string) - CSS 'left' property of the DOM element
     // top (string) - CSS 'top' property of the DOM element
-    // width (string) - CSS 'width' property of the DOM element
-    // height (string) - CSS 'height' property of the DOM element
+    // width (string) - CSS 'width' property of the img inside the DOM element
+    // height (string) - CSS 'height' property of the img inside the DOM element
     // imageURL (string) - URL to the prop's image
     Prop.prototype.init = function(id, left, top, width, height, imageURL) {
       this.id = id;
@@ -337,6 +345,17 @@ function registerTypes(model) {
       return this.scenes.get(this.sceneIndex);
     }
 
+    // Adds more scenes to this stage
+    Stage.prototype.addScenes = function(backgrounds) {
+      var model = gapi.drive.realtime.custom.getModel(this);
+      var oldCount = this.scenes.length;
+      for (var i = oldCount; i < oldCount + backgrounds.length; i++) {
+        var scene = model.create(Scene, i, backgrounds[i - oldCount], model);
+        model.getRoot().set("_scene_" + i, scene);
+        this.scenes.push(scene);
+      }
+    }
+
     // Gets called whenever the stage is modified
     // (E.g. page flip)
     Stage.prototype.update = function(event) {
@@ -348,7 +367,9 @@ function registerTypes(model) {
       }
     }
 
-    // Flips forward to the next page
+    // Flips forward to the next page.
+    // Changing sceneIndex automatically triggers a call to
+    // Stage.prototype.update across all active user sessions.
     Stage.prototype.flipForward = function() {
       if (this.sceneIndex + 1 < this.scenes.length) {
         this.sceneIndex++;
@@ -356,6 +377,8 @@ function registerTypes(model) {
     }
 
     // Flips back to the previous page
+    // Changing sceneIndex automatically triggers a call to
+    // Stage.prototype.update across all active user sessions.
     Stage.prototype.flipBackwards = function() {
       if (this.sceneIndex - 1 >= 0 && this.scenes.length > 0) {
         this.sceneIndex--;
