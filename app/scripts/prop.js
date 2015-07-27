@@ -6,18 +6,12 @@ var clientId = '355588130388-q160ev44v09s1h2ka76fun7k1cj8ptat.apps.googleusercon
 if (!/^([0-9])$/.test(clientId[0])) {
   alert('Invalid Client ID - did you forget to insert your application Client ID?');
 }
+
 // Create a new instance of the realtime utility with your client ID.
 var realtimeUtils = new utils.RealtimeUtils({ clientId: clientId });
 
 var model = null;
 var photos = null;
-
-// Uncomment for test photos
-// var photos = [
-//   "http://www.swampdogphotographyworkshops.com/wp-content/uploads/2013/04/MTB-thick-redwoods-HC_V3.jpg",
-//   "http://www.redwoods.info/photos%5C475P4trail.bmp",
-//   "http://hmbcoastsidetours.com/wp-content/uploads/2014/04/Shining-Through.jpg"
-// ];
 
 // This is automatically invoked once Google APIs have finished loading
 // (We pass a parameter to the Google API library indicating that authorize 
@@ -71,30 +65,26 @@ function start(pickPhotos) {
 // The first time a file is opened, it must be initialized with the
 // document structure. Any one-time setup should go here.
 function onFileInitialize(model) {
-  // 1. Initialize the stage
+  // Initialize the stage
   var stage = model.create(Stage, "stage-inner", "next-stage", "prev-stage", photos, model);
   model.getRoot().set("stage", stage);
 }
 
 // After a file has been initialized and loaded, we can access the
-// document. We will wire up the data model to the UI.
+// document. We'll fetch all existing collaborative objects and
+// update the UI to show the current state of those objects
+// (hidden, visible, etc.)
 function onFileLoaded(doc) {
   model = doc.getModel();
-
-  // Load existing objects
   var keys = model.getRoot().keys();
   for (var i = 0; i < keys.length; i++) {
-    if (keys[i] != "searchString") {
-      var prop = model.getRoot().get(keys[i]);
-      // There's a gotcha here...
-      // This only works because every custom class we've registered
-      // uses "onload" for the onLoaded event. I can't figure out
-      // how to call the onLoaded event, so this works by polymorphism.
-      try {
-        prop.onload();
-      }
-      catch (err) {}
+    var obj = model.getRoot().get(keys[i]);
+    try {
+      obj.onload();
     }
+    // Only our custom objects will have onload() defined,
+    // so we can catch and ignore errors for default objects
+    catch (err) {}
   }
 }
 
@@ -168,23 +158,25 @@ function registerTypes(model) {
     }
 
     Prop.prototype.update = function(event) {
-      var prop = event.target;
-      prop.elem.style.left = prop.startX;
-      prop.elem.style.top = prop.startY;
+      if (!event.isLocal) {
+        var prop = event.target;
+        prop.elem.style.left = prop.startX;
+        prop.elem.style.top = prop.startY;
 
-      //console.log("Left: " + prop.elem.style.left 
-      //  + ", top: " + prop.elem.style.top);
-      //prop.elem.style.left = prop.startX;
-      var $img = $(prop.elem).children('img');
+        //console.log("Left: " + prop.elem.style.left 
+        //  + ", top: " + prop.elem.style.top);
+        //prop.elem.style.left = prop.startX;
+        var $img = $(prop.elem).children('img');
 
-      // So max-width/height doesn't squash it
-      if (!$img.css('max-width') || prop.lenX > $img.css('max-width'))
-        $img.css('max-width', prop.lenX+"px");
-      if (!$img.css('max-height') || prop.lenY > $img.css('max-height'))
-        $img.css('max-height', prop.lenY+"px");
+        // So max-width/height doesn't squash it
+        if (!$img.css('max-width') || prop.lenX > $img.css('max-width'))
+          $img.css('max-width', prop.lenX+"px");
+        if (!$img.css('max-height') || prop.lenY > $img.css('max-height'))
+          $img.css('max-height', prop.lenY+"px");
 
-      $(prop.elem).children('img').width(prop.lenX);
-      $(prop.elem).children('img').height(prop.lenY);
+        $(prop.elem).children('img').width(prop.lenX);
+        $(prop.elem).children('img').height(prop.lenY);
+      }
     }
 
     Prop.prototype.sync = function(stx, sty, width, height) {
@@ -295,9 +287,13 @@ function registerTypes(model) {
     // This gets called when somebody else joins the session
     // and needs to create and sync the stage
     Stage.prototype.onload = function() {
-      if (!this.elem) {
-        this.elem = document.getElementById(this.stageId);
-        this.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, this.update);
+      if (!this.scenes) {
+        // Locate all scene objects owned by this stage
+        var model = gapi.drive.realtime.custom.getModel(this);
+        this.scenes = [];
+        for (var i = 0; i < this.backgroundCount; i++) {
+          this.scenes.push(model.getRoot().get("_scene_" + i));
+        }
 
         // Wire up forward button
         var stage = this;
@@ -312,12 +308,8 @@ function registerTypes(model) {
           stage.flipBackwards();
         });
 
-        // Locate all scene objects
-        var model = gapi.drive.realtime.custom.getModel(this);
-        this.scenes = [];
-        for (var i = 0; i < this.backgroundCount; i++) {
-          this.scenes.push(model.getRoot().get("_scene_" + i));
-        }
+        // Register update function
+        this.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, this.update);
       }
       // Show the active scene and hide all other scenes
       for (var i = 0; i < this.scenes.length; i++) {
@@ -330,7 +322,6 @@ function registerTypes(model) {
     Stage.prototype.update = function(event) {
       if (!event.isLocal) {
         var stage = event.target;
-        // Show the active scene and hide all other scenes
         for (var i = 0; i < stage.scenes.length; i++) {
           stage.scenes[i].active = (i == stage.currentBackgroundIndex);
         }
