@@ -1,12 +1,13 @@
 $(function() {
   var id = "i"+Math.random();
-  var propDiv = makeDraggableElement(sessionStorage.cmb, id);
+  var className = 'avatar';
+  var propDiv = makeDraggableElement(sessionStorage.cmb, id, className);
   document.getElementById("content").appendChild(propDiv);
 })
 
 // For old Image Search API (we actually use this, though)
 function hndlr(response) {
-  for (var i = 0; i < response.responseData.results.length; i++) {
+  for (var i = response.responseData.results.length - 1; i >=0 ; i--) {
     var item = response.responseData.results[i];
     var id = "i"+Math.random();
     var propDiv = makeDraggableElement(item.url, id);
@@ -24,8 +25,17 @@ function searchNoun(noun) {
   document.getElementById("terms").innerHTML += "<span class=\"term\">" + noun + "</span>";
 }
 
+function clearAllButAvatars() {
+  $("#content").children('div').each(function(i) { 
+    if (! $(this).hasClass('avatar')) {
+      $(this).remove();
+    }
+  });
+}
+
 function searchAll() {
-  document.getElementById("content").innerHTML = "";
+  clearAllButAvatars();
+  //document.getElementById("content").innerHTML = "";
   document.getElementById("terms").innerHTML = "";
   var input = document.querySelector("#queryfield").value;
   var sentence = nlp.pos(input).sentences[0];
@@ -44,3 +54,10 @@ function searchAll() {
     searchNoun(noun.text);
   }
 }
+
+
+$("#queryfield").keypress(function(e) {
+  if (e.keyCode === 0 || e.keyCode === 32 || e.keyCode === 190 || e.keyCode === 188 || e.keyCode === 110  || e.keyCode === 46 || e.keyCode === 44) {
+    searchAll();
+  }
+});

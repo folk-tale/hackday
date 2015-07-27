@@ -355,7 +355,7 @@ function registerTypes(model) {
 
 //----- Begin wrapper API -----//
 
-function makeDraggableElement(url, id) {
+function makeDraggableElement(url, id, additionalClass) {
   var img = document.createElement('img');
   img.src = url;
   img.className = "hidden";
@@ -363,6 +363,7 @@ function makeDraggableElement(url, id) {
 
   var div = document.createElement('div');
   div.className = "img-wrapper";
+  div.className += " " + additionalClass;
   div.id = id;
 
   div.appendChild(img);

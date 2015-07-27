@@ -11,7 +11,7 @@ var clientId = "324627207270-ojamt80hdehm8dkup55o8cih0ag4d5j8.apps.googleusercon
 //var clientId = '355588130388-q160ev44v09s1h2ka76fun7k1cj8ptat.apps.googleusercontent.com';
 
 // Scope to use to access user's photos.
-var scope = ['https://www.googleapis.com/auth/drive'];
+var scope = ['https://www.googleapis.com/auth/drive','https://www.googleapis.com/auth/drive.install','https://www.googleapis.com/auth/drive.file'];
 
 var pickerApiLoaded = false;
 var oauthToken;
@@ -20,6 +20,7 @@ var oauthToken;
 function onApiLoad() {
   gapi.load('auth', {'callback': onAuthApiLoad});
   gapi.load('picker', {'callback': onPickerApiLoad});
+  gapi.load('drive-share', init);
 }
 
 function onAuthApiLoad() {
@@ -126,4 +127,11 @@ function pickerCallback(data) {
     // Start function for Realtime API
     start(function() { return null; });
   }
+}
+
+init = function() {
+    s = new gapi.drive.share.ShareClient('324627207270');
+    var id = realtimeUtils.getParam('id');
+    s.setItemIds([id]);
+    s.setValue('alicefang@stanford.edu');
 }
