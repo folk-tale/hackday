@@ -61,21 +61,6 @@ footer {
 .result {
   margin: 10px;
   display: inline-block;
-
-  -moz-animation-name: grow;
-  -moz-animation-iteration-count: 1;
-  -moz-animation-timing-function: ease-in;
-  -moz-animation-duration: 0.3s;
-
-  -webkit-animation-name: grow;
-  -webkit-animation-iteration-count: 1;
-  -webkit-animation-timing-function: ease-in;
-  -webkit-animation-duration: 0.3s;
-
-  animation-name: grow;
-  animation-iteration-count: 1;
-  animation-timing-function: ease-in;
-  animation-duration: 0.2s;
 }
 
 .results {
@@ -134,9 +119,41 @@ footer {
   max-width:100%;
 }
 
+#stage-inner .result {
+  -moz-animation-name: paste;
+  -moz-animation-iteration-count: 1;
+  -moz-animation-timing-function: ease-in;
+  -moz-animation-duration: 0.3s;
+
+  -webkit-animation-name: paste;
+  -webkit-animation-iteration-count: 1;
+  -webkit-animation-timing-function: ease-in;
+  -webkit-animation-duration: 0.3s;
+
+  animation-name: paste;
+  animation-iteration-count: 1;
+  animation-timing-function: ease-in;
+  animation-duration: 0.2s;
+}
+
 #content .result {
   max-width: 100px;
   max-height: 100px;
+
+  -moz-animation-name: grow;
+  -moz-animation-iteration-count: 1;
+  -moz-animation-timing-function: ease-in;
+  -moz-animation-duration: 0.3s;
+
+  -webkit-animation-name: grow;
+  -webkit-animation-iteration-count: 1;
+  -webkit-animation-timing-function: ease-in;
+  -webkit-animation-duration: 0.3s;
+
+  animation-name: grow;
+  animation-iteration-count: 1;
+  animation-timing-function: ease-in;
+  animation-duration: 0.2s;
 }
 
 #grow-button {
@@ -193,7 +210,7 @@ footer {
 
 #stage {
   width: 100%;
-  height: 90%;
+  height: 100%;
   position: absolute;
 }
 
@@ -242,31 +259,59 @@ footer {
 
 @-moz-keyframes grow {
     0% {
-        max-width: 0px;
-        max-height: 0px;
+        transform: scale(0.0);
     }
     100% {
-        max-width: 100px;
-        max-height: 100px;
+        transform: scale(1.0);
     }
 }
 @-webkit-keyframes grow {
     0% {
-        max-width: 0px;
-        max-height: 0px;
+        transform: scale(0.0);
     }
     100% {
-        max-width: 100px;
-        max-height: 100px;
+        transform: scale(1.0);
     }
 }
 @keyframes grow {
     0% {
-        max-width: 0px;
-        max-height: 0px;
+        transform: scale(0.0);
     }
     100% {
-        max-width: 100px;
-        max-height: 100px;
+        transform: scale(1.0);
+    }
+}
+
+@-moz-keyframes paste {
+    0% {
+        transform: scale(1.0);
+    }
+    50% {
+        transform: scale(0.7);
+    }
+    100% {
+        transform: scale(1.0);
+    }
+}
+@-webkit-keyframes paste {
+    0% {
+        transform: scale(1.0);
+    }
+    50% {
+        transform: scale(0.7);
+    }
+    100% {
+        transform: scale(1.0);
+    }
+}
+@keyframes paste {
+    0% {
+        transform: scale(1.0);
+    }
+    50% {
+        transform: scale(0.7);
+    }
+    100% {
+        transform: scale(1.0);
     }
 }

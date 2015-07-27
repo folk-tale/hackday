@@ -26,8 +26,8 @@ $("#stage").droppable({
       //console.log("imageX: " + imgX + ", imageY: " + imgY + ", stageX: " + $(".stage-container") .position().left);
       $imgWrapper.css({
         'position': 'absolute', 
-        'left': imgX-$(".stage-container").position().left, 
-        'top': imgY-$(".stage-container").position().top,
+        'left': imgX-$("#stage-inner").position().left, 
+        'top': imgY-$("#stage-inner").position().top,
       });
 
       $img = $imgWrapper.children('img');

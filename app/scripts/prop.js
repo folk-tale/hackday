@@ -178,12 +178,13 @@ function registerTypes(model) {
     }
 
     Prop.prototype.sync = function() {
-      // Update properties from position on page
+      // Update properties based on from position of DOM element on page.
+      // Changing these properties will automatically trigger a call to
+      // Prop.prototype.update in all active user sessions.
       this.left = $(this.elem).css("left");
       this.top = $(this.elem).css("top");
       this.width = $(this.img).css("width");
       this.height = $(this.img).css("height");
-      console.log("Sync: (" + this.left + ", " + this.top + ", " + this.width + ", " + this.height + ")");
     }
 
     Prop.prototype.stash = function() {
@@ -195,7 +196,7 @@ function registerTypes(model) {
     Prop.prototype.show = function() {
       this.active = true;
       // Apply local change immediately
-      this.elem.style.display = "block";
+      this.elem.style.display = "inline-block";
     }
 
     Prop.prototype.delete = function() {
