@@ -66,6 +66,9 @@ function start(pickPhotos) {
 // The first time a file is opened, it must be initialized with the
 // document structure. Any one-time setup should go here.
 function onFileInitialize(model) {
+  var players = model.createList();
+  model.getRoot().set('players',players);
+
   // Initialize the stage
   var stage = model.create(Stage, "stage-inner", "next-stage", "prev-stage", photos, model);
   model.getRoot().set("stage", stage);
@@ -78,6 +81,12 @@ function onFileInitialize(model) {
 // (hidden, visible, etc.)
 function onFileLoaded(doc) {
   model = doc.getModel();
+
+  // add names to list
+  if (model.getRoot().get('players').indexOf(sessionStorage.getItem('name')) == -1) {
+    model.getRoot().get('players').push(sessionStorage.getItem('name'));
+  }
+
   var keys = model.getRoot().keys();
   for (var i = 0; i < keys.length; i++) {
     var obj = model.getRoot().get(keys[i]);
@@ -198,7 +207,9 @@ function registerTypes(model) {
     Prop.prototype.stash = function() {
       this.active = false;
       // Apply local change immediately
-      this.elem.style.display = "none";
+      // this.elem.style.display = "none";
+      // this.elem.classList.append('');
+
     }
 
     Prop.prototype.show = function() {
@@ -230,9 +241,10 @@ function registerTypes(model) {
       this.active = false;
       this.backgroundURL = url;
       this.props = model.createList();
-
       this.description = model.createString();
-      this.description.setText("_scene_description_" + id);
+      if(id == 0) {
+        this.description.setText("Once upon a time names");
+      }
     }
 
     // Adds a prop to this scene
@@ -245,6 +257,10 @@ function registerTypes(model) {
     Scene.prototype.onload = function() {
       this.active ? this.show() : this.stash();
       this.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, this.update);
+      var model = gapi.drive.realtime.custom.getModel(this);
+      var players = model.getRoot().get('players');
+      var names = players.toString();
+      this.description.setText(this.description.getText() + names);
     }
 
     // This gets called when a scene goes from active to not
@@ -295,6 +311,7 @@ function registerTypes(model) {
     Stage.prototype.backwardId = gapi.drive.realtime.custom.collaborativeField('backwardId');
     Stage.prototype.sceneIndex = gapi.drive.realtime.custom.collaborativeField('currentBackgroundIndex');
     Stage.prototype.scenes = gapi.drive.realtime.custom.collaborativeField('scenes');
+    Stage.prototype.players = gapi.drive.realtime.custom.collaborativeField('players');
 
     // One-time init for a stage
     Stage.prototype.init = function(stageId, forwardId, backwardId, backgrounds, model) {
