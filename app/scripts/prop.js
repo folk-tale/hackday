@@ -173,7 +173,9 @@ function registerTypes(model) {
         this.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, this.update);
       }
       $(this.elem).css({"top": this.top, "left": this.left});
-      $(this.elem).css("display", (this.active) ? "inline-block" : "none");
+      // $(this.elem).css("display", (this.active) ? "inline-block" : "none");
+        if (this.active) $(this.elem).addClass('onScene');
+        else $(this.elem).removeClass('offScene');
       $(this.img).width(this.width).height(this.height);
     }
 
@@ -182,7 +184,9 @@ function registerTypes(model) {
         // Update position, visibility, and dimensions
         var prop = event.target;
         $(prop.elem).css({"top": prop.top, "left": prop.left});
-        $(prop.elem).css("display", (prop.active) ? "inline-block" : "none");
+        // $(prop.elem).css("display", (prop.active) ? "inline-block" : "none");
+          if (prop.active) $(prop.elem).addClass('onScene');
+          else $(prop.elem).removeClass('offScene');
         $(prop.img).width(prop.width).height(prop.height);
 
         // Set max-width and max-height styles on the image to prevent
@@ -208,14 +212,16 @@ function registerTypes(model) {
       this.active = false;
       // Apply local change immediately
       // this.elem.style.display = "none";
-      // this.elem.classList.append('');
-
+      $(this.elem).addClass('offScene');
+      $(this.elem).removeClass('onScene');
     }
 
     Prop.prototype.show = function() {
       this.active = true;
       // Apply local change immediately
-      this.elem.style.display = "inline-block";
+      $(this.elem).addClass('onScene');
+      $(this.elem).removeClass('offScene');
+
     }
 
     Prop.prototype.delete = function() {
@@ -296,6 +302,21 @@ function registerTypes(model) {
       for (var i = 0; i < this.props.length; i++) {
         this.props.get(i).show();
       }
+
+      var avatarExists = false;
+      // add avatar if none exists in scene
+      $(".onScene").each(function() {
+        console.log(this.id);
+        if (this.id.includes('avatar'+sessionStorage.getItem('name'))){
+          avatarExists = true;
+          return false;
+        }
+      });
+
+      if(!avatarExists) {
+        addAvatarToBackstage();
+      }
+
     }
 
     // Register Scene class with Realtime
@@ -381,7 +402,7 @@ function registerTypes(model) {
         for (var i = 0; i < stage.scenes.length; i++) {
           stage.scenes.get(i).active = (i == stage.sceneIndex);
         }
-      }
+      } 
     }
 
     // Flips forward to the next page.
@@ -415,16 +436,23 @@ function registerTypes(model) {
 
 //----- Begin wrapper API -----//
 
-function makeDraggableElement(url, id, additionalClass) {
+function makeDraggableElement(url, id, additionalClasses) {
   var img = document.createElement('img');
   img.src = url;
   img.className = "hidden";
   img.onload = function() { this.className = "result"; }
 
   var div = document.createElement('div');
-  div.style.display = "inline-block";
+  $(div).addClass('onScene');
+  // div.style.display = "inline-block";
   div.classList.add("img-wrapper");
-  div.classList.add(additionalClass);
+
+  if (additionalClasses != null) {
+    for (var i = 0; i < additionalClasses.length; i++) {
+      div.classList.add(additionalClasses[i]);
+    }
+  }
+
   div.id = id;
 
   div.appendChild(img);
