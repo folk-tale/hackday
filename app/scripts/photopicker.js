@@ -1,5 +1,5 @@
 // Need to select at least 5 photos to proceed
-var MIN_PHOTOS_SELECTED = 5;
+var MIN_PHOTOS_SELECTED = 3;
 
 // The Browser API key obtained from the Google Developers Console.
 var developerKey = 'AIzaSyAjOXZ5Ual4zaYrdJkxu06pp5ARRpPEqEg';

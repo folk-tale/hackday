@@ -248,9 +248,20 @@ function registerTypes(model) {
       this.backgroundURL = url;
       this.props = model.createList();
       this.description = model.createString();
-      if(id == 0) {
-        this.description.setText("Once upon a time names");
-      }
+      if (id == 0) {
+        this.description.setText("Once upon a time, there were two dragons, [name1] and [name2]. They lived in … ");
+      } else if (id == 1) {
+        this.description.setText("Everyday, when [name1] and [name2] woke up in the morning, they [what did the dragons do in the morning?]");
+      } else if (id == 2) {
+        this.description.setText("One day, everything changed. [What did the dragons do this day?]");
+      } 
+      else if (id == 3) {
+        this.description.setText("Because of that, [what happened?]");
+      } else if (id == 4) {
+        this.description.setText("Finally, ");
+      } else if (id == 5) {
+        this.description.setText("The end!");
+      } 
     }
 
     // Adds a prop to this scene
@@ -266,7 +277,19 @@ function registerTypes(model) {
       var model = gapi.drive.realtime.custom.getModel(this);
       var players = model.getRoot().get('players');
       var names = players.toString();
-      this.description.setText(this.description.getText() + names);
+
+      // if (model != null && players.get(0)) {
+      //   var narration = this.description.getText();
+      //   var name1index = narration.indexOf('[name1]');
+      //   if (name1index != -1) {
+      //     narration = narration.substring(0,name1index) + players.get(0) + narration.substring(name1index+7, narration.length);
+      //   }
+      //   var name2index = narration.indexOf('[name2]');
+      //   if (name2index != -1) {
+      //     narration = narration.substring(0,name2index) + players.get(0) + narration.substring(name2index+7, narration.length);
+      //   }
+      //   this.description.setText(narration);
+      // }
     }
 
     // This gets called when a scene goes from active to not
