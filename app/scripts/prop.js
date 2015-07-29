@@ -303,7 +303,7 @@ function registerTypes(model) {
       pattern = pattern.replace("\\{@\\}", "(.*|{@})");
       var regex = new RegExp(pattern);
 
-      // If the regex matches - i.e. users haven't changed te default description,
+      // If the regex matches - i.e. users haven't changed the default description,
       // then update the text
       if (this.description.text.match(regex)) { 
         var formattedText = this.descriptionTemplate.getText().replace("{#}", players.length);
