@@ -61,11 +61,11 @@ footer {
 }
 
 .onScene {
-  display: inline-block;
+  display: inline-block !important;
 }
 
 .offScene {
-  display: none;
+  display: none !important;
 }
 
 .result {

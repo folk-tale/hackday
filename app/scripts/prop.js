@@ -177,8 +177,15 @@ function registerTypes(model) {
         this.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, this.update);
       }
       $(this.elem).css({"top": this.top, "left": this.left});
-      (this.active) ?  $(this.elem).addClass('onScene') : $(this.elem).removeClass('offScene');
       $(this.img).width(this.width).height(this.height);
+      if (this.active) {
+        $(this.elem).addClass('onScene');
+        $(this.elem).removeClass('offScene');
+      }
+      else {
+        $(this.elem).addClass('offScene')
+        $(this.elem).removeClass('onScene')
+      }
     }
 
     Prop.prototype.update = function(event) {
@@ -186,8 +193,15 @@ function registerTypes(model) {
         // Update position, visibility, and dimensions
         var prop = event.target;
         $(prop.elem).css({"top": prop.top, "left": prop.left});
-        (prop.active) ? $(prop.elem).addClass('onScene') : $(prop.elem).removeClass('offScene');
         $(prop.img).width(prop.width).height(prop.height);
+        if (prop.active) {
+          $(prop.elem).addClass('onScene');
+          $(prop.elem).removeClass('offScene');
+        }
+        else {
+          $(prop.elem).addClass('offScene')
+          $(prop.elem).removeClass('onScene')
+        }
 
         // Set max-width and max-height styles on the image to prevent
         // them from growing outside the stage bounds
