@@ -22,11 +22,13 @@ hr {
 }
 
 footer {
+  position: fixed;
   width: 100%;
-  background: #A6A096;
+  background: #6ECCDC;
   height: 130px;
-  margin-top: 50px;
   bottom: 0px;
+  z-index: 1000;
+  border-top: 1px solid #488691;
 }
 
 .backstage-container {
@@ -170,8 +172,8 @@ footer {
 }
 
 #invite-link {
-  border: 1px solid #666;
-  background: #CCCCCC;
+  border: 1px solid #488691;
+  background: #CFEEFF;
   margin-top: 10px;
   padding: 10px;
   color: #999;
