@@ -1,3 +1,7 @@
+function getURLParameter(name) {
+  return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
+}
+
 //var clientId = '324627207270-ojamt80hdehm8dkup55o8cih0ag4d5j8.apps.googleusercontent.com';
 
 // Ben-han's client ID
@@ -6,6 +10,26 @@ var clientId = '355588130388-q160ev44v09s1h2ka76fun7k1cj8ptat.apps.googleusercon
 if (!/^([0-9])$/.test(clientId[0])) {
   alert('Invalid Client ID - did you forget to insert your application Client ID?');
 }
+
+// make sure user has photo & name
+function checkSignupFlow() {
+  console.log(sessionStorage);
+  var id = getURLParameter('id');
+  if (!sessionStorage.getItem('name')) {
+    if (id)
+      window.location.replace("./avatars/start.html?id="+id);
+    else 
+      window.location.replace("./avatars/start.html");
+
+  } else if (!sessionStorage.getItem('cmb')) {
+    if (id)
+      window.location.replace("./avatars/takePicture.html?id="+id);
+    else 
+      window.location.replace("./avatars/takePicture.html");
+  }
+}
+
+checkSignupFlow();
 
 // Create a new instance of the realtime utility with your client ID.
 var realtimeUtils = new utils.RealtimeUtils({ clientId: clientId });
@@ -261,17 +285,17 @@ function registerTypes(model) {
     // {#} will be sub'ed with the number of players
     // {#} will be sub'ed with player names
     Scene.prototype.starters = [
-      "Once upon a time, there were {#} dragons, {@}. They lived in … "
+      "Once upon a time, there were {#} dragons, {@}. They lived in … ",
+      "Everyday, when {@} woke up in the morning, they [what did the dragons do in the morning?]",
+      "One day, everything changed. [What did the dragons do this day?]"
     ];
 
     Scene.prototype.fillers = [
-      "Everyday, when {@} woke up in the morning, they [what did the dragons do in the morning?]",
-      "One day, everything changed. [What did the dragons do this day?]",
       "Because of that, [what happened?]",
-      "Finally, … ",
     ];
 
     Scene.prototype.enders = [
+      "Finally, … ",
       "The end!"
     ];
 
@@ -284,10 +308,13 @@ function registerTypes(model) {
       this.descriptionTemplate = model.createString();
 
       // Choose a random description for each scene
-      if (id == 0) {
-        var randomText = this.starters[Math.floor(Math.random() * this.starters.length)];
-      }
-      else {
+      if (id >= 0 && id <= 2) {
+        var randomText = this.starters[id];
+      } else if (id == 5) {
+        var randomText = this.enders[0];
+      } else if (id == 6) {
+        var randomText = this.enders[1];
+      } else {
         var randomText = this.fillers[Math.floor(Math.random() * this.fillers.length)];
       }
       this.description.setText(randomText);
