@@ -66,6 +66,7 @@ function start(pickPhotos) {
 // The first time a file is opened, it must be initialized with the
 // document structure. Any one-time setup should go here.
 function onFileInitialize(model) {
+  // Create global player list
   var players = model.createList();
   model.getRoot().set('players',players);
 
@@ -82,11 +83,14 @@ function onFileInitialize(model) {
 function onFileLoaded(doc) {
   model = doc.getModel();
 
-  // add names to list
-  if (model.getRoot().get('players').indexOf(sessionStorage.getItem('name')) == -1) {
-    model.getRoot().get('players').push(sessionStorage.getItem('name'));
+  // Add current player to player list
+  var players = model.getRoot().get('players');
+  var currentPlayer = sessionStorage.getItem('name');
+  if (currentPlayer && players && players.indexOf(currentPlayer) == -1) {
+    players.push(currentPlayer);
   }
 
+  // Load custom objects
   var keys = model.getRoot().keys();
   for (var i = 0; i < keys.length; i++) {
     var obj = model.getRoot().get(keys[i]);
@@ -173,9 +177,7 @@ function registerTypes(model) {
         this.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, this.update);
       }
       $(this.elem).css({"top": this.top, "left": this.left});
-      // $(this.elem).css("display", (this.active) ? "inline-block" : "none");
-        if (this.active) $(this.elem).addClass('onScene');
-        else $(this.elem).removeClass('offScene');
+      (this.active) ?  $(this.elem).addClass('onScene') : $(this.elem).removeClass('offScene');
       $(this.img).width(this.width).height(this.height);
     }
 
@@ -184,9 +186,7 @@ function registerTypes(model) {
         // Update position, visibility, and dimensions
         var prop = event.target;
         $(prop.elem).css({"top": prop.top, "left": prop.left});
-        // $(prop.elem).css("display", (prop.active) ? "inline-block" : "none");
-          if (prop.active) $(prop.elem).addClass('onScene');
-          else $(prop.elem).removeClass('offScene');
+        (prop.active) ? $(prop.elem).addClass('onScene') : $(prop.elem).removeClass('offScene');
         $(prop.img).width(prop.width).height(prop.height);
 
         // Set max-width and max-height styles on the image to prevent
@@ -239,8 +239,27 @@ function registerTypes(model) {
     Scene = function() { /* See Realtime-friendly init function below */ }
     Scene.prototype.props = gapi.drive.realtime.custom.collaborativeField('props');
     Scene.prototype.active = gapi.drive.realtime.custom.collaborativeField('active');
+    Scene.prototype.descriptionTemplate = gapi.drive.realtime.custom.collaborativeField('descriptionTemplate');
     Scene.prototype.description = gapi.drive.realtime.custom.collaborativeField('description');
     Scene.prototype.backgroundURL = gapi.drive.realtime.custom.collaborativeField('backgroundURL');
+
+    // Declare template strings here
+    // {#} will be sub'ed with the number of players
+    // {#} will be sub'ed with player names
+    Scene.prototype.starters = [
+      "Once upon a time, there were {#} dragons, {@}. They lived in … "
+    ];
+
+    Scene.prototype.fillers = [
+      "Everyday, when {@} woke up in the morning, they [what did the dragons do in the morning?]",
+      "One day, everything changed. [What did the dragons do this day?]",
+      "Because of that, [what happened?]",
+      "Finally, … ",
+    ];
+
+    Scene.prototype.enders = [
+      "The end!"
+    ];
 
     Scene.prototype.init = function(id, url, model) {
       this.index = id;
@@ -248,20 +267,17 @@ function registerTypes(model) {
       this.backgroundURL = url;
       this.props = model.createList();
       this.description = model.createString();
+      this.descriptionTemplate = model.createString();
+
+      // Choose a random description for each scene
       if (id == 0) {
-        this.description.setText("Once upon a time, there were two dragons, [name1] and [name2]. They lived in … ");
-      } else if (id == 1) {
-        this.description.setText("Everyday, when [name1] and [name2] woke up in the morning, they [what did the dragons do in the morning?]");
-      } else if (id == 2) {
-        this.description.setText("One day, everything changed. [What did the dragons do this day?]");
-      } 
-      else if (id == 3) {
-        this.description.setText("Because of that, [what happened?]");
-      } else if (id == 4) {
-        this.description.setText("Finally, ");
-      } else if (id == 5) {
-        this.description.setText("The end!");
-      } 
+        var randomText = this.starters[Math.floor(Math.random() * this.starters.length)];
+      }
+      else {
+        var randomText = this.fillers[Math.floor(Math.random() * this.fillers.length)];
+      }
+      this.description.setText(randomText);
+      this.descriptionTemplate.setText(randomText);
     }
 
     // Adds a prop to this scene
@@ -274,22 +290,26 @@ function registerTypes(model) {
     Scene.prototype.onload = function() {
       this.active ? this.show() : this.stash();
       this.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, this.update);
+
+      // Update the scene description (but ONLY if it's the default one)
       var model = gapi.drive.realtime.custom.getModel(this);
       var players = model.getRoot().get('players');
-      var names = players.toString();
+      var names = this.namesToString(players);
+      
+      // Build a regex to check if the users have changed the default description
+      var pattern = this.descriptionTemplate.text;
+      pattern = pattern.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+      pattern = pattern.replace("\\{\\#\\}", "([0-9]*|{#})");
+      pattern = pattern.replace("\\{@\\}", "(.*|{@})");
+      var regex = new RegExp(pattern);
 
-      // if (model != null && players.get(0)) {
-      //   var narration = this.description.getText();
-      //   var name1index = narration.indexOf('[name1]');
-      //   if (name1index != -1) {
-      //     narration = narration.substring(0,name1index) + players.get(0) + narration.substring(name1index+7, narration.length);
-      //   }
-      //   var name2index = narration.indexOf('[name2]');
-      //   if (name2index != -1) {
-      //     narration = narration.substring(0,name2index) + players.get(0) + narration.substring(name2index+7, narration.length);
-      //   }
-      //   this.description.setText(narration);
-      // }
+      // If the regex matches - i.e. users haven't changed te default description,
+      // then update the text
+      if (this.description.text.match(regex)) { 
+        var formattedText = this.descriptionTemplate.getText().replace("{#}", players.length);
+        formattedText = formattedText.replace("{@}", names);
+        this.description.setText(formattedText);
+      }
     }
 
     // This gets called when a scene goes from active to not
@@ -326,20 +346,40 @@ function registerTypes(model) {
         this.props.get(i).show();
       }
 
+      // Add avatar to backstage if none exists in scene
       var avatarExists = false;
-      // add avatar if none exists in scene
       $(".onScene").each(function() {
         console.log(this.id);
-        if (this.id.includes('avatar'+sessionStorage.getItem('name'))){
+        if (this.id.includes('avatar' + sessionStorage.getItem('name'))){
           avatarExists = true;
           return false;
         }
       });
-
       if(!avatarExists) {
         addAvatarToBackstage();
       }
+    }
 
+    // Player names to string
+    // 'names' should be a list of strings
+    Scene.prototype.namesToString = function(names) {
+      if (names.length == 0) {
+        return "no one";
+      }
+      else if (names.length == 1) {
+        return names.get(0);
+      }
+      else if (names.length == 2) {
+        return names.get(0) + " and " + names.get(1);
+      }
+      else {
+        var str = "";
+        for (var i = 0; i < names.length - 1; i++) {
+          str += names.get(i) + ", "
+        }
+        str += "and " + names.get(names.length - 1);
+        return str;
+      }
     }
 
     // Register Scene class with Realtime
