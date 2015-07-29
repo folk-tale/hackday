@@ -1,9 +1,16 @@
-$(function() {
-  var id = "i"+Math.random();
-  var className = 'avatar';
-  var propDiv = makeDraggableElement(sessionStorage.cmb, id, className);
+// $(function() {
+//   var id = "i"+Math.random();
+//   var className = 'avatar';
+//   var propDiv = makeDraggableElement(sessionStorage.cmb, id, className);
+//   document.getElementById("content").appendChild(propDiv);
+// })
+
+function addAvatarToBackstage() {
+  var id = "avatar"+sessionStorage.getItem('name')+Math.random();
+  var classNames = ['onScene'];
+  var propDiv = makeDraggableElement(sessionStorage.cmb, id, classNames);
   document.getElementById("content").appendChild(propDiv);
-})
+}
 
 // For old Image Search API (we actually use this, though)
 function hndlr(response) {

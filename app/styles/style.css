@@ -203,7 +203,7 @@ footer {
   box-sizing: border-box;
   padding: 5px;
   font-size: 14pt;
-  height: 30pt;
+  height: 70pt;
 }
 
 #results-container {
@@ -252,6 +252,14 @@ footer {
   width: 100px;
   height: 100px;
   border: 1px solid #999999;
+}
+
+.onScene {
+  display: inline-block;
+}
+
+.offScene {
+  display: none;
 }
 
 @font-face {

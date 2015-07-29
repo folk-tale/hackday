@@ -66,6 +66,9 @@ function start(pickPhotos) {
 // The first time a file is opened, it must be initialized with the
 // document structure. Any one-time setup should go here.
 function onFileInitialize(model) {
+  var players = model.createList();
+  model.getRoot().set('players',players);
+
   // Initialize the stage
   var stage = model.create(Stage, "stage-inner", "next-stage", "prev-stage", photos, model);
   model.getRoot().set("stage", stage);
@@ -78,6 +81,12 @@ function onFileInitialize(model) {
 // (hidden, visible, etc.)
 function onFileLoaded(doc) {
   model = doc.getModel();
+
+  // add names to list
+  if (model.getRoot().get('players').indexOf(sessionStorage.getItem('name')) == -1) {
+    model.getRoot().get('players').push(sessionStorage.getItem('name'));
+  }
+
   var keys = model.getRoot().keys();
   for (var i = 0; i < keys.length; i++) {
     var obj = model.getRoot().get(keys[i]);
@@ -164,7 +173,9 @@ function registerTypes(model) {
         this.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, this.update);
       }
       $(this.elem).css({"top": this.top, "left": this.left});
-      $(this.elem).css("display", (this.active) ? "inline-block" : "none");
+      // $(this.elem).css("display", (this.active) ? "inline-block" : "none");
+        if (this.active) $(this.elem).addClass('onScene');
+        else $(this.elem).removeClass('offScene');
       $(this.img).width(this.width).height(this.height);
     }
 
@@ -173,7 +184,9 @@ function registerTypes(model) {
         // Update position, visibility, and dimensions
         var prop = event.target;
         $(prop.elem).css({"top": prop.top, "left": prop.left});
-        $(prop.elem).css("display", (prop.active) ? "inline-block" : "none");
+        // $(prop.elem).css("display", (prop.active) ? "inline-block" : "none");
+          if (prop.active) $(prop.elem).addClass('onScene');
+          else $(prop.elem).removeClass('offScene');
         $(prop.img).width(prop.width).height(prop.height);
 
         // Set max-width and max-height styles on the image to prevent
@@ -198,13 +211,17 @@ function registerTypes(model) {
     Prop.prototype.stash = function() {
       this.active = false;
       // Apply local change immediately
-      this.elem.style.display = "none";
+      // this.elem.style.display = "none";
+      $(this.elem).addClass('offScene');
+      $(this.elem).removeClass('onScene');
     }
 
     Prop.prototype.show = function() {
       this.active = true;
       // Apply local change immediately
-      this.elem.style.display = "inline-block";
+      $(this.elem).addClass('onScene');
+      $(this.elem).removeClass('offScene');
+
     }
 
     Prop.prototype.delete = function() {
@@ -230,9 +247,21 @@ function registerTypes(model) {
       this.active = false;
       this.backgroundURL = url;
       this.props = model.createList();
-
       this.description = model.createString();
-      this.description.setText("_scene_description_" + id);
+      if (id == 0) {
+        this.description.setText("Once upon a time, there were two dragons, [name1] and [name2]. They lived in … ");
+      } else if (id == 1) {
+        this.description.setText("Everyday, when [name1] and [name2] woke up in the morning, they [what did the dragons do in the morning?]");
+      } else if (id == 2) {
+        this.description.setText("One day, everything changed. [What did the dragons do this day?]");
+      } 
+      else if (id == 3) {
+        this.description.setText("Because of that, [what happened?]");
+      } else if (id == 4) {
+        this.description.setText("Finally, ");
+      } else if (id == 5) {
+        this.description.setText("The end!");
+      } 
     }
 
     // Adds a prop to this scene
@@ -245,6 +274,22 @@ function registerTypes(model) {
     Scene.prototype.onload = function() {
       this.active ? this.show() : this.stash();
       this.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, this.update);
+      var model = gapi.drive.realtime.custom.getModel(this);
+      var players = model.getRoot().get('players');
+      var names = players.toString();
+
+      // if (model != null && players.get(0)) {
+      //   var narration = this.description.getText();
+      //   var name1index = narration.indexOf('[name1]');
+      //   if (name1index != -1) {
+      //     narration = narration.substring(0,name1index) + players.get(0) + narration.substring(name1index+7, narration.length);
+      //   }
+      //   var name2index = narration.indexOf('[name2]');
+      //   if (name2index != -1) {
+      //     narration = narration.substring(0,name2index) + players.get(0) + narration.substring(name2index+7, narration.length);
+      //   }
+      //   this.description.setText(narration);
+      // }
     }
 
     // This gets called when a scene goes from active to not
@@ -280,6 +325,21 @@ function registerTypes(model) {
       for (var i = 0; i < this.props.length; i++) {
         this.props.get(i).show();
       }
+
+      var avatarExists = false;
+      // add avatar if none exists in scene
+      $(".onScene").each(function() {
+        console.log(this.id);
+        if (this.id.includes('avatar'+sessionStorage.getItem('name'))){
+          avatarExists = true;
+          return false;
+        }
+      });
+
+      if(!avatarExists) {
+        addAvatarToBackstage();
+      }
+
     }
 
     // Register Scene class with Realtime
@@ -295,6 +355,7 @@ function registerTypes(model) {
     Stage.prototype.backwardId = gapi.drive.realtime.custom.collaborativeField('backwardId');
     Stage.prototype.sceneIndex = gapi.drive.realtime.custom.collaborativeField('currentBackgroundIndex');
     Stage.prototype.scenes = gapi.drive.realtime.custom.collaborativeField('scenes');
+    Stage.prototype.players = gapi.drive.realtime.custom.collaborativeField('players');
 
     // One-time init for a stage
     Stage.prototype.init = function(stageId, forwardId, backwardId, backgrounds, model) {
@@ -364,7 +425,7 @@ function registerTypes(model) {
         for (var i = 0; i < stage.scenes.length; i++) {
           stage.scenes.get(i).active = (i == stage.sceneIndex);
         }
-      }
+      } 
     }
 
     // Flips forward to the next page.
@@ -398,16 +459,23 @@ function registerTypes(model) {
 
 //----- Begin wrapper API -----//
 
-function makeDraggableElement(url, id, additionalClass) {
+function makeDraggableElement(url, id, additionalClasses) {
   var img = document.createElement('img');
   img.src = url;
   img.className = "hidden";
   img.onload = function() { this.className = "result"; }
 
   var div = document.createElement('div');
-  div.style.display = "inline-block";
+  $(div).addClass('onScene');
+  // div.style.display = "inline-block";
   div.classList.add("img-wrapper");
-  div.classList.add(additionalClass);
+
+  if (additionalClasses != null) {
+    for (var i = 0; i < additionalClasses.length; i++) {
+      div.classList.add(additionalClasses[i]);
+    }
+  }
+
   div.id = id;
 
   div.appendChild(img);
