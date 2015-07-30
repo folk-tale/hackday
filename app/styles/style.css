@@ -85,7 +85,7 @@ footer {
 
 .search-bar-container {
   float: left;
-  width: 66%;
+  width: 100%;
 }
 
 .search-input {
@@ -212,6 +212,7 @@ footer {
   padding: 5px;
   font-size: 14pt;
   height: 70pt;
+  width: 100%;
 }
 
 #results-container {
@@ -226,7 +227,8 @@ footer {
 
 #stage-inner {
   width: 100%;
-  height: 90%;
+  height: 75%;
+  /*margin-bottom:20px;*/
   /*padding: 0.5em;*/
   border: 1px solid #999999;
   position: relative;
