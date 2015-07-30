@@ -55,7 +55,7 @@ function searchAll() {
   if (!sentence) {
     return;
   }
-  var nouns = sentence.nouns();
+  var nouns = sentence.tokens;
   for (var i = 0; i < nouns.length; i++) {
     var noun = nouns[i];
     if (noun.pos.tag.lastIndexOf("NNP", 0) === 0 || // Skip proper nouns
