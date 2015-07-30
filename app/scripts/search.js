@@ -51,20 +51,14 @@ function searchAll() {
   clearAllButAvatars();
   document.getElementById("terms").innerHTML = "";
   var input = document.querySelector("#queryfield").value;
-  var sentence = nlp.pos(input).sentences[0];
-  if (!sentence) {
-    return;
-  }
-  var nouns = sentence.tokens;
-  for (var i = 0; i < nouns.length; i++) {
-    var noun = nouns[i];
-    if (noun.pos.tag.lastIndexOf("NNP", 0) === 0 || // Skip proper nouns
-        noun.pos.tag.lastIndexOf("PRP", 0) === 0 || // Skip pronouns
-        noun.pos.tag.lastIndexOf("WH", 0) === 0)    // Skip wh- pronouns
-    {
-      continue;
+  var sentences = nlp.pos(input).sentences;
+  for (var j = 0; j < sentences.length; j++) {
+    var sentence = sentences[j];
+    for (var i = 0; i < sentence.tokens.length; i++) {
+      var token = sentence.tokens[i];
+      var formattedToken = token.text.replace(/\W/g, '')
+      addSearchButton(formattedToken);
     }
-    addSearchButton(noun.text);
   }
 }
 
