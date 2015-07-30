@@ -69,7 +69,9 @@ $("#content").droppable({
       var width = $img.width();
       var height = $img.height();
 
-      document.getElementById("content").appendChild(ui.draggable.get(0));
+      var contentarea = document.getElementById("content");
+      var child = ui.draggable.get(0);
+      contentarea.insertBefore(child, contentarea.firstChild);
       ui.draggable.css({position: 'relative', left: 0, top: 0});
        $img = ui.draggable.children('img');
 

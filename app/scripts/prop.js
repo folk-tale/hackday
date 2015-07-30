@@ -264,7 +264,7 @@ function registerTypes(model) {
 
     Prop.prototype.delete = function() {
       var model = gapi.drive.realtime.custom.getModel(this);
-      model.getRoot().delete(gapi.drive.realtime.custom.getId(this));
+      model.getRoot().delete(this.id);
     }
 
     // Register Prop class with Realtime
