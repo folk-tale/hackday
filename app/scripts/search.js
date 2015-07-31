@@ -1,7 +1,7 @@
 // Adds the user avatar as a sticker to backstage
 function addAvatarToBackstage() {
   var id = "avatar"+sessionStorage.getItem('name')+Math.random();
-  var classNames = ['onScene'];
+  var classNames = ['onScene','avatar'];
   var propDiv = makeDraggableElement(sessionStorage.cmb, id, classNames);
   document.getElementById("content").appendChild(propDiv);
 }
@@ -22,7 +22,7 @@ function hndlr(response) {
     var item = response.responseData.results[i];
     var id = "i"+Math.random();
     var propDiv = makeDraggableElement(item.url, id);
-    contentarea.insertBefore(propDiv, contentarea.firstChild);
+    contentarea.appendChild(propDiv, contentarea.firstChild);
   }
 }
 
@@ -37,6 +37,7 @@ function addSearchButton(noun) {
     var reqURL = "https://ajax.googleapis.com/ajax/services/search/images?v=1.0&callback=hndlr&rsz=8&imgc=trans&imgsz=medium&safe=active&q=" + query;
     var script = document.createElement("script");
     script.src = reqURL;
+    clearAllButAvatars();
     document.getElementById("content").appendChild(script);
   })
   document.getElementById("terms").appendChild(button);
