@@ -1,10 +1,4 @@
-// $(function() {
-//   var id = "i"+Math.random();
-//   var className = 'avatar';
-//   var propDiv = makeDraggableElement(sessionStorage.cmb, id, className);
-//   document.getElementById("content").appendChild(propDiv);
-// })
-
+// Adds the user avatar as a sticker to backstage
 function addAvatarToBackstage() {
   var id = "avatar"+sessionStorage.getItem('name')+Math.random();
   var classNames = ['onScene'];
@@ -12,6 +6,7 @@ function addAvatarToBackstage() {
   document.getElementById("content").appendChild(propDiv);
 }
 
+// Clears all current stickers except the user avatar
 function clearAllButAvatars() {
   $("#content").children('div').each(function(i) { 
     if (! $(this).hasClass('avatar')) {
@@ -47,38 +42,23 @@ function addSearchButton(noun) {
   document.getElementById("terms").appendChild(button);
 }
 
+// Add search buttons for all terms in all sentences
 function searchAll() {
   clearAllButAvatars();
   document.getElementById("terms").innerHTML = "";
   var input = document.querySelector("#queryfield").value;
-  var sentence = nlp.pos(input).sentences[0];
-  if (!sentence) {
-    return;
-  }
-  var nouns = sentence.tokens;
-  for (var i = 0; i < nouns.length; i++) {
-    var noun = nouns[i];
-    if (noun.pos.tag.lastIndexOf("NNP", 0) === 0 || // Skip proper nouns
-        noun.pos.tag.lastIndexOf("PRP", 0) === 0 || // Skip pronouns
-        noun.pos.tag.lastIndexOf("WH", 0) === 0)    // Skip wh- pronouns
-    {
-      continue;
+  var sentences = nlp.pos(input).sentences;
+  for (var j = 0; j < sentences.length; j++) {
+    var sentence = sentences[j];
+    for (var i = 0; i < sentence.tokens.length; i++) {
+      var token = sentence.tokens[i];
+      var formattedToken = token.text.replace(/\W/g, '')
+      addSearchButton(formattedToken);
     }
-    addSearchButton(noun.text);
   }
 }
 
-// Auto search
+// Auto search as user types
 $("#queryfield").keyup(function(e) {
-  /*
-  if (e.keyCode === 13 ||     // Enter
-      e.keyCode === 32 ||     // Space
-      e.keyCode === 190 ||    // Period
-      e.keyCode === 188 ||    // Comma 
-      e.keyCode === 110  ||   // Decimal point
-      e.keyCode === 46 ||     // Delete
-      e.keyCode === 8) {      // Backspace
-    searchAll();
-  }*/
-  searchAll(); // Lolz
+  searchAll();
 });
