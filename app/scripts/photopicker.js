@@ -16,11 +16,14 @@ var scope = ['https://www.googleapis.com/auth/drive','https://www.googleapis.com
 var pickerApiLoaded = false;
 var oauthToken;
 
+
 // Use the API Loader script to load google.picker and gapi.auth.
 function onApiLoad() {
   gapi.load('auth', {'callback': onAuthApiLoad});
   gapi.load('picker', {'callback': onPickerApiLoad});
-  gapi.load('drive-share', init);
+  gapi.client.load('drive', 'v2', insertPermission);
+  /* // for sharing specifically with one person - more secure for later
+  gapi.load('drive-share', shareInit); */
 }
 
 function onAuthApiLoad() {
@@ -129,8 +132,24 @@ function pickerCallback(data) {
   }
 }
 
-init = function() {
+shareInit = function() {
     s = new gapi.drive.share.ShareClient('324627207270');
     var id = realtimeUtils.getParam('id');
     s.setItemIds([id]);
+}
+
+/**
+ * Allow anyone signed in to edit file.
+ */
+function insertPermission() {
+  var id = realtimeUtils.getParam('id');
+  var body = {
+    'type': 'anyone',
+    'role': 'writer'
+  };
+  var request = gapi.client.drive.permissions.insert({
+    'fileId': id,
+    'resource': body
+  });
+  request.execute(function(resp) { });
 }
