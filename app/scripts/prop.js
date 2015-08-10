@@ -46,17 +46,17 @@ function authorize() {
     if (response.error){
       // Authorization failed because this is the first time the user has used your application,
       // show the authorization prompt before the photopicker.
-      var button = document.createElement('auth_button');
+      /*var button = document.createElement('auth_button');
       button.addEventListener('click', function () {
         realtimeUtils.authorize(function(response){
           start();
         }, true);
       });
-      button.click();
+      button.click();*/
 
-      /*realtimeUtils.authorize(function(response) {
+      realtimeUtils.authorize(function(response) {
         start();
-      }, true);*/
+      }, true);
     } else {
       start();
     }
