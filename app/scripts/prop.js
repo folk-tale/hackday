@@ -53,6 +53,7 @@ function authorize() {
       start();
     }
   }, false);
+  onApiLoad(realtimeUtils.authorizer.token);
 }
 
 // Creates a new file for a new story or loads an existing story.
@@ -116,7 +117,8 @@ function onFileLoaded(doc) {
   }
 
   // Let the user pick photos
-  onApiLoad();
+  onApiLoad(realtimeUtils.authorizer.token);
+  //createPicker(realtimeUtils.authorizer.token);
 }
 
 function registerTypes(model) {

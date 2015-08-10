@@ -4,49 +4,23 @@ var MIN_PHOTOS_SELECTED = 3;
 // The Browser API key obtained from the Google Developers Console.
 var developerKey = 'AIzaSyAjOXZ5Ual4zaYrdJkxu06pp5ARRpPEqEg';
 
-// The Client ID obtained from the Google Developers Console. Replace with your own Client ID.
-var clientId = "324627207270-ojamt80hdehm8dkup55o8cih0ag4d5j8.apps.googleusercontent.com"
-
-// Ben-han's client ID
-//var clientId = '355588130388-q160ev44v09s1h2ka76fun7k1cj8ptat.apps.googleusercontent.com';
-
-// Scope to use to access user's photos.
-var scope = ['https://www.googleapis.com/auth/drive','https://www.googleapis.com/auth/drive.install','https://www.googleapis.com/auth/drive.file'];
-
 var pickerApiLoaded = false;
-var oauthToken;
 
 // Use the API Loader script to load google.picker and gapi.auth.
-function onApiLoad() {
-  gapi.load('auth', {'callback': onAuthApiLoad});
-  gapi.load('picker', {'callback': onPickerApiLoad});
+function onApiLoad(oauthToken) {
+  gapi.load('picker', {'callback': onPickerApiLoad(oauthToken)});
   gapi.client.load('drive', 'v2', insertPermission);
   /* // for sharing specifically with one person - more secure for later
   gapi.load('drive-share', shareInit); */
 }
 
-function onAuthApiLoad() {
-  window.gapi.auth.authorize({
-    'client_id': clientId,
-    'scope': scope,
-    'immediate': false
-  }, handleAuthResult);
-}
-
-function onPickerApiLoad() {
+function onPickerApiLoad(oauthToken) {
   pickerApiLoaded = true;
-  createPicker();
-}
-
-function handleAuthResult(authResult) {
-  if (authResult && !authResult.error) {
-    oauthToken = authResult.access_token;
-    createPicker();
-  }
+  createPicker(oauthToken);
 }
 
 // Create and render a Picker object for picking user Photos.
-function createPicker() {
+function createPicker(oauthToken) {
   if (pickerApiLoaded && oauthToken) {
     var picker = new google.picker.PickerBuilder().
         enableFeature(google.picker.Feature.MULTISELECT_ENABLED).
