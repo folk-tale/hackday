@@ -3,7 +3,18 @@ function addAvatarToBackstage() {
   var id = "avatar" + sessionStorage.getItem('name') + Math.random();
   var classNames = ['onScene','avatar'];
   var propDiv = makeDraggableElement(sessionStorage.cmb, id, classNames);
-  document.getElementById("content").appendChild(propDiv);
+  var contentarea = document.getElementById("content");
+  contentarea.appendChild(propDiv, contentarea.firstChild);
+}
+
+// Removes a user avatar as a sticker to backstage
+// Parameter: the CSS id of the avatar to remove
+function removeAvatarFromBackstage() {
+  $("#content").children('div').each(function(i) { 
+    if ($(this).attr('id').indexOf('avatar' + sessionStorage.getItem('name')) != -1) {
+      $(this).remove();
+    }
+  });
 }
 
 // Clears all current stickers except the user avatar

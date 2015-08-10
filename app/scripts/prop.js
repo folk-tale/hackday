@@ -283,7 +283,7 @@ function registerTypes(model) {
 
     // Declare template strings here
     // {#} will be sub'ed with the number of players
-    // {#} will be sub'ed with player names
+    // {@} will be sub'ed with player names
     Scene.prototype.starters = [
       "Once upon a time, there were {#} dragons, {@}. They lived in … ",
       "Everyday, when {@} woke up in the morning, they [what did the dragons do in the morning?]",
@@ -291,11 +291,11 @@ function registerTypes(model) {
     ];
 
     Scene.prototype.fillers = [
-      "Because of that, [what happened?]",
+      "Because of that, [what happened?]"
     ];
 
     Scene.prototype.enders = [
-      "Finally, … ",
+      "Finally, the {#} dragons … ",
       "The end!"
     ];
 
@@ -324,6 +324,23 @@ function registerTypes(model) {
     // Adds a prop to this scene
     Scene.prototype.addProp = function(prop) {
       this.props.push(prop);
+    }
+
+    // Removes a prop from the current scene
+    // 
+    Scene.prototype.removeProp = function(propID) {
+      var index = -1;
+      for (var i = 0; i < this.props.length; i++) {
+        var prop = this.props.get(i);
+        if (prop.id == propID) {
+          index = i;
+          break;
+        }
+      }
+      if (index != -1) {
+        this.props.remove(index);
+      }
+      return (index != -1);
     }
 
     // This gets called when somebody else joins the session
@@ -364,7 +381,7 @@ function registerTypes(model) {
     // This gets called when a scene goes from active to not
     // active, or vice versa. Basically, on a scene change.
     Scene.prototype.update = function(event) {
-      var scene = event.target;
+      var scene = (event == undefined) ? this : event.target;
       scene.active ? scene.show() : scene.stash();
     }
 
@@ -391,22 +408,26 @@ function registerTypes(model) {
       stage.style.backgroundSize = 'cover';
 
       // Show owned props
+      var avatarExists = false;
       for (var i = 0; i < this.props.length; i++) {
-        this.props.get(i).show();
+        var prop = this.props.get(i);
+        prop.show();
+
+        // Check if the user avatar is one of the props
+        var avatarIDPrefix = 'avatar' + sessionStorage.getItem('name');
+        if (prop.id.indexOf(avatarIDPrefix) != -1) {
+          avatarExists = true;
+        }
       }
 
-      // Add avatar to backstage if none exists in scene
-      var avatarExists = false;
-      $(".onScene").each(function() {
-        console.log(this.id);
-        if (this.id.includes('avatar' + sessionStorage.getItem('name'))){
-          avatarExists = true;
-          return false;
-        }
-      });
+      // Add avatar to backstage if it's not in the scene
+      removeAvatarFromBackstage();
       if(!avatarExists) {
         addAvatarToBackstage();
       }
+
+      // Update prop generators
+      $("#queryfield").trigger("change");
     }
 
     // Player names to string
@@ -509,12 +530,17 @@ function registerTypes(model) {
     // Gets called whenever the stage is modified
     // (E.g. page flip)
     Stage.prototype.update = function(event) {
-      if (!event.isLocal) {
-        var stage = event.target;
+      if (event == undefined || !event.isLocal) {
+        var stage = (event == undefined) ? this : event.target;
         for (var i = 0; i < stage.scenes.length; i++) {
           stage.scenes.get(i).active = (i == stage.sceneIndex);
+
+          // Continue propagating local changes
+          if (event == undefined) {
+            stage.scenes.get(i).update();
+          }
         }
-      } 
+      }
     }
 
     // Flips forward to the next page.
@@ -523,6 +549,7 @@ function registerTypes(model) {
     Stage.prototype.flipForward = function() {
       if (this.sceneIndex + 1 < this.scenes.length) {
         this.sceneIndex++;
+        this.update();
       }
     }
 
@@ -532,6 +559,7 @@ function registerTypes(model) {
     Stage.prototype.flipBackwards = function() {
       if (this.sceneIndex - 1 >= 0 && this.scenes.length > 0) {
         this.sceneIndex--;
+        this.update();
       }
     }
 
@@ -600,14 +628,20 @@ function makeDraggableElement(url, id, additionalClasses) {
 function addProp(propID, propX, propY, propWidth, propHeight, propURL) {
   // Create prop
   var prop = model.create(Prop, propID, propX, propY, propWidth, propHeight, propURL);
-  model.getRoot().set(propID, prop);
 
   // Add prop to current scene
   var stage = model.getRoot().get("stage");
   var currentScene = stage.currentScene();
   currentScene.addProp(prop);
-
   return prop;
+}
+
+function removeProp(propID) {
+  var stage = model.getRoot().get("stage");
+  var currentScene = stage.currentScene();
+  var success = currentScene.removeProp(propID);
+  console.log("Removed prop? " + success);
+  return success;
 }
 
 function createPropFromElement(elem) {
