@@ -36,7 +36,6 @@ var realtimeUtils = new utils.RealtimeUtils({ clientId: clientId });
 
 var model = null;
 var photos = null;
-var firstLoad = false;
 
 // This is automatically invoked once Google APIs have finished loading
 // (We pass a parameter to the Google API library indicating that authorize 
@@ -47,30 +46,20 @@ function authorize() {
     if (response.error){
       // Authorization failed because this is the first time the user has used your application,
       // show the authorization prompt before the photopicker.
-      realtimeUtils.authorize(function(response){
-        // Invoke photo-picking process (see photopicker.js for def. of onApiLoad())
-        onApiLoad();
-        userDidAuthorize();
+      realtimeUtils.authorize(function(response) {
+        start();
       }, true);
     } else {
-        // Invoke photo-picking process (see photopicker.js for def. of onApiLoad())
-        onApiLoad();
-        userDidAuthorize();
+      start();
     }
   }, false);
 }
 
-// pickPhotos is a callback function that should return a list of URLs
-// of photos to use as background images
-function start(pickPhotos) {
+// Creates a new file for a new story or loads an existing story.
+function start() {
   // Register custom types.
   // Note this must happen BEFORE the shared document is loaded.
   registerTypes();
-
-  // Pick photos:
-  // If it exists, we tack on what was chosen.
-  // If it doesn't exist, photos becomes what was chosen.
-  photos = (photos) ? photos.concat(pickPhotos()) : pickPhotos();
 
   // With auth taken care of, load a file, or create one if there
   // is not an id in the URL.
@@ -80,7 +69,7 @@ function start(pickPhotos) {
     realtimeUtils.load(id.replace('/', ''), onFileLoaded, onFileInitialize);
   } else {
     // Create a new document, add it to the URL
-    realtimeUtils.createRealtimeFile('New Quickstart File', function(createResponse) {
+    realtimeUtils.createRealtimeFile('My Folktale story', function(createResponse) {
       window.history.pushState(null, null, '?id=' + createResponse.id);
       realtimeUtils.load(createResponse.id, onFileLoaded, onFileInitialize);
     });
@@ -95,7 +84,7 @@ function onFileInitialize(model) {
   model.getRoot().set('players', players);
 
   // Initialize the stage
-  var stage = model.create(Stage, "stage-inner", "next-stage", "prev-stage", photos, model);
+  var stage = model.create(Stage, "stage-inner", "next-stage", "prev-stage", null, model);
   model.getRoot().set("stage", stage);
   firstLoad = true;
 }
@@ -126,11 +115,8 @@ function onFileLoaded(doc) {
     catch (err) {}
   }
 
-  // Allow new users to contribute photos as well
-  if (!firstLoad) {
-    var stage = model.getRoot().get("stage");
-    stage.addScenes(photos);
-  }
+  // Let the user pick photos
+  onApiLoad();
 }
 
 function registerTypes(model) {
@@ -327,7 +313,6 @@ function registerTypes(model) {
     }
 
     // Removes a prop from the current scene
-    // 
     Scene.prototype.removeProp = function(propID) {
       for (var i = 0; i < this.props.length; i++) {
         var prop = this.props.get(i);
@@ -472,10 +457,8 @@ function registerTypes(model) {
       this.scenes = model.createList();
 
       // Create a Scene for every available background
-      for (var i = 0; i < backgrounds.length; i++) {
-        var scene = model.create(Scene, i, backgrounds[i], model);
-        model.getRoot().set("_scene_" + i, scene);
-        this.scenes.push(scene);
+      if (backgrounds) {
+        this.addScenes(backgrounds);
       }
     }
 
@@ -521,6 +504,7 @@ function registerTypes(model) {
         model.getRoot().set("_scene_" + i, scene);
         this.scenes.push(scene);
       }
+      this.update();
     }
 
     // Gets called whenever the stage is modified
@@ -648,6 +632,19 @@ function removeProp(propID) {
   var success = currentScene.removeProp(propID);
   console.log("Removed prop? " + success);
   return success;
+}
+
+/* Adds scenes to the current tale.
+ * Parameters:
+ * photos (list) - A list of image URLs to serve as backgrounds for
+ *                 the additional scenes.
+ */
+function addScenes(photos) {
+  if (photos == undefined || !photos || photos.length == 0) {
+    return;
+  }
+  var stage = model.getRoot().get("stage");
+  stage.addScenes(photos);
 }
 
 function addGrowButton($imgWrapper) {
