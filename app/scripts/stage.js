@@ -53,7 +53,7 @@ $("#stage").droppable({
       });
 
       // Now it needs to be synchronized, so we make it an official prop:
-      props[ui.draggable.attr('id')] = createPropFromElement(ui.draggable.get(0));
+      props[ui.draggable.attr('id')] = addProp(ui.draggable.get(0));
 
     }
   }

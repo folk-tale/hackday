@@ -92,7 +92,7 @@ function start(pickPhotos) {
 function onFileInitialize(model) {
   // Create global player list
   var players = model.createList();
-  model.getRoot().set('players',players);
+  model.getRoot().set('players', players);
 
   // Initialize the stage
   var stage = model.create(Stage, "stage-inner", "next-stage", "prev-stage", photos, model);
@@ -329,18 +329,14 @@ function registerTypes(model) {
     // Removes a prop from the current scene
     // 
     Scene.prototype.removeProp = function(propID) {
-      var index = -1;
       for (var i = 0; i < this.props.length; i++) {
         var prop = this.props.get(i);
         if (prop.id == propID) {
-          index = i;
-          break;
+          this.props.remove(i);
+          return true;
         }
       }
-      if (index != -1) {
-        this.props.remove(index);
-      }
-      return (index != -1);
+      return false;
     }
 
     // This gets called when somebody else joins the session
@@ -618,6 +614,7 @@ function makeDraggableElement(url, id, additionalClasses) {
 
 /* Creates a new prop on the stage
  * Parameters:
+ * propElem (DOM node) - a DOM element to turn into a prop
  * propID (string) - CSS id for the prop
  * propX (string) - x-coordinate of top left corner of the prop
  * propY (string) - y-coordinate of top right corner of the prop
@@ -625,9 +622,14 @@ function makeDraggableElement(url, id, additionalClasses) {
  * propHeight (string) - height of the prop
  * propURL (string) - image URL for the prop
  */
-function addProp(propID, propX, propY, propWidth, propHeight, propURL) {
+function addProp(propElem) {
   // Create prop
-  var prop = model.create(Prop, propID, propX, propY, propWidth, propHeight, propURL);
+  var prop = model.create(Prop, propElem.id, 
+                                propElem.style.left, 
+                                propElem.style.top, 
+                                propElem.childNodes[0].style.width,
+                                propElem.childNodes[0].style.height,
+                                propElem.childNodes[0].src);
 
   // Add prop to current scene
   var stage = model.getRoot().get("stage");
@@ -636,21 +638,16 @@ function addProp(propID, propX, propY, propWidth, propHeight, propURL) {
   return prop;
 }
 
+/* Deletes a prop from the stage.
+ * Parameters:
+ * propID (string) - CSS id for the prop
+ */
 function removeProp(propID) {
   var stage = model.getRoot().get("stage");
   var currentScene = stage.currentScene();
   var success = currentScene.removeProp(propID);
   console.log("Removed prop? " + success);
   return success;
-}
-
-function createPropFromElement(elem) {
-  return addProp(elem.id, 
-    elem.style.left, 
-    elem.style.top, 
-    elem.childNodes[0].style.width,
-    elem.childNodes[0].style.height,
-    elem.childNodes[0].src);
 }
 
 function addGrowButton($imgWrapper) {
