@@ -351,6 +351,14 @@ function registerTypes(model) {
         formattedText = formattedText.replace("{@}", names);
         this.description.setText(formattedText);
       }
+
+      // Fire JS change events when description changes
+      this.description.addEventListener(gapi.drive.realtime.EventType.TEXT_INSERTED, function() {
+        $("#queryfield").trigger("change");
+      });
+      this.description.addEventListener(gapi.drive.realtime.EventType.TEXT_DELETED, function() {
+        $("#queryfield").trigger("change");
+      });
     }
 
     // This gets called when a scene goes from active to not
