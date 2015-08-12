@@ -1,6 +1,6 @@
 html, body {
   background: #F6F0E6;
-  font-family: Arial, sans-serif;
+  font-family: "Lucida Grande", "Arial", sans-serif;
   font-size: 14pt;
   padding: 0px;
   margin: 0px;
@@ -121,6 +121,17 @@ footer {
   display: inline-block;
 }
 
+#authorized-content {
+  height: 100%;
+}
+
+#authorization-dialog {
+  width: 600px;
+  height: 300px;
+  margin: 0px auto;
+  margin-top: 100px;
+}
+
 #bg-img.hamburger{
   position: absolute;
   max-height:100%;
@@ -129,6 +140,28 @@ footer {
 #bg-img.hotdog{
   position: absolute;
   max-width:100%;
+}
+
+#donebutton {  
+  margin-top: 50px;
+  width: 80px;
+  -webkit-border-radius: 1;
+  -moz-border-radius: 1;
+  border-radius: 5px;
+  font-family: Arial;
+  color: #ffffff;
+  font-size: 16px;
+  padding: 10px 20px 10px 20px;
+  text-decoration: none;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  background: #f8b438;
+  cursor: pointer;
+  text-align: center;
+}
+
+#donebutton:hover {
+  background: #ebab37;
 }
 
 #stage-inner .result {

@@ -9,24 +9,26 @@
 </head>
 <body>
 
-  <img src="../images/logo-trans.png">
+  <div class="center" style="width: 450px">
+    <img src="../images/logo-trans.png">
 
-  <h1>
-    Hello! What's your name?
-  </h1>
+    <h1>
+      Hello! What's your name?
+    </h1>
 
-  <input name="name" type="text" id="name"></input>
+    <input name="name" type="text" id="name"></input>
 
-  <div id="donebutton">I'm done!</div>
-  <div id="warning"> Your name should be at least one letter</div>
-  
-  <script>
-  document.addEventListener("keyup", function(event) {
-    if (event.keyCode == 13) { // Enter
-      document.getElementById("donebutton").click();
-    }
-  });
-  </script>
+    <div id="donebutton">I'm done!</div>
+    <div id="warning"> Your name should be at least one letter</div>
+    
+    <script>
+    document.addEventListener("keyup", function(event) {
+      if (event.keyCode == 13) { // Enter
+        document.getElementById("donebutton").click();
+      }
+    });
+    </script>
+  </div>
 
 </body>
 </html>

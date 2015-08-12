@@ -58,82 +58,108 @@
       </div>
     </div>
 
-    <div class="container">
+    <!-- Authorization dialog -->
+    <div id="authorization-dialog" style="display: none;">
+      <h3>One more step...</h3>
+      <p>Folktale needs access to your Google drive. Pretty please?</p>
+      <div id="donebutton">Yep!</div>
+    </div>
 
-      <div class="backstage-container">
+    <div id="authorized-content" style="display: none;">
+      
+      <div class="container">
 
-        <div id="terms-container">
-          <h5>Prop Generator</h5>
-          <hr />
-          <div id="terms"></div>
-        </div> <!-- terms-container -->
+        <div class="backstage-container">
 
-        <!-- disable share button for now -->
-        <!--<button onclick="s.showSettingsDialog()" style="display:block;">Share</button>-->
+          <div id="terms-container">
+            <h5>Prop Generator</h5>
+            <hr />
+            <div id="terms"></div>
+          </div> <!-- terms-container -->
 
-        <div id="results-container">
-          <h5>Props</h5>
-          <hr />
-          <div class="results" id="content"></div>
-        </div> <!-- results-container -->
+          <!-- disable share button for now -->
+          <!--<button onclick="s.showSettingsDialog()" style="display:block;">Share</button>-->
 
-      </div> <!-- backstage-container -->
+          <div id="results-container">
+            <h5>Props</h5>
+            <hr />
+            <div class="results" id="content"></div>
+          </div> <!-- results-container -->
 
-      <div class="stage-container">
-        <div class="search-bar-container">
-        <form action="javascript:searchAll()" accept-charset="utf-8">
-          <textarea class="search-input" id="queryfield" placeholder="Enter a sentence..." name="q"></textarea>
-          <!--<button type="submit" class="search-submit" id="submitbutton">Go</button>
-          <button id="start_button" onclick="startButton(event)">
-            <img id="start_img" src="images/mic.gif" alt="Start">
-          </button>-->
-        </form>
-      </div> <!-- searchbar-container -->
-        <br />
-        <div id="stage-inner">
-          <div id="stage"></div>
-          <div id="prev-stage">&lsaquo;</div>
-          <div id="next-stage">&rsaquo;</div>
-        </div>
-      </div> <!-- stage-container -->
+        </div> <!-- backstage-container -->
 
-    </div> <!-- container -->
+        <div class="stage-container">
+          <div class="search-bar-container">
+          <form action="javascript:searchAll()" accept-charset="utf-8">
+            <textarea class="search-input" id="queryfield" placeholder="Enter a sentence..." name="q"></textarea>
+            <!--<button type="submit" class="search-submit" id="submitbutton">Go</button>
+            <button id="start_button" onclick="startButton(event)">
+              <img id="start_img" src="images/mic.gif" alt="Start">
+            </button>-->
+          </form>
+        </div> <!-- searchbar-container -->
+          <br />
+          <div id="stage-inner">
+            <div id="stage"></div>
+            <div id="prev-stage">&lsaquo;</div>
+            <div id="next-stage">&rsaquo;</div>
+          </div>
+        </div> <!-- stage-container -->
 
-    <footer>
-       <div id="invite-wrapper">
-        <div id="invite-text"></div>
-        <textarea id="invite-link" rows="1"></textarea>
-        <script type="text/javascript">
+      </div> <!-- container -->
 
-          // Callback function invoked once the user has authorized
-          // (We can't get the share link until the user has authorized)
-          function realtimeFileDidLoad() {
-            var link = document.getElementById("invite-link");
-            link.textContent = window.location.href;
-            link.addEventListener("click", function() {
+      <footer>
+         <div id="invite-wrapper">
+          <div id="invite-text"></div>
+          <textarea id="invite-link" rows="1"></textarea>
+        </div> 
+      </footer>
 
-            });
-            var people = ["Grandma", "Grandpa", "Mom", "Dad", "Auntie", "Uncle"];
-            var randomPerson = people[Math.floor(Math.random() * people.length)];
-            var text = document.getElementById("invite-text");
-            text.textContent = "Invite " + randomPerson + "! (click to copy link):";
-          }
-          // Copy-on-click (uses some *very* new features....support might
-          // not be widespread but as long as you're on Chrome you'll prolly
-          // be okay.)
-          document.querySelector('#invite-link').addEventListener("click", function() {
-            this.select();
-            try {
-              var successful = document.execCommand('copy');
-              var msg = successful ? 'successful' : 'unsuccessful';
-              console.log('Copying text command was ' + msg);
-            } catch (err) {
-              console.log('Oops, unable to copy');
-            }
-          });
-        </script>
-      </div> 
-    </footer>
+    </div> <!-- Authorized content -->
+
+    <script type="text/javascript">
+
+      // Callback function to authorize the user
+      function realtimeNeedsAuthorization(realtimeUtils, start) {
+        document.getElementById("authorization-dialog").style.display = "block";
+        var authorizeButton = document.getElementById("donebutton");
+        authorizeButton.addEventListener("click", function(event) {
+          realtimeUtils.authorize(function(response) {
+            start();
+          }, true);
+        });
+      }
+
+      // Callback function invoked once the user has authorized
+      // (We can't get the share link until the user has authorized)
+      function realtimeFileDidLoad() {
+        var link = document.getElementById("invite-link");
+        link.textContent = window.location.href;
+        link.addEventListener("click", function() {
+
+        });
+        var people = ["Grandma", "Grandpa", "Mom", "Dad", "Auntie", "Uncle"];
+        var randomPerson = people[Math.floor(Math.random() * people.length)];
+        var text = document.getElementById("invite-text");
+        text.textContent = "Invite " + randomPerson + "! (click to copy link):";
+
+        document.getElementById("authorized-content").style.display = "block";
+        document.getElementById("authorization-dialog").style.display = "none";
+      }
+      // Copy-on-click (uses some *very* new features....support might
+      // not be widespread but as long as you're on Chrome you'll prolly
+      // be okay.)
+      document.querySelector('#invite-link').addEventListener("click", function() {
+        this.select();
+        try {
+          var successful = document.execCommand('copy');
+          var msg = successful ? 'successful' : 'unsuccessful';
+          console.log('Copying text command was ' + msg);
+        } catch (err) {
+          console.log('Oops, unable to copy');
+        }
+      });
+    </script>
     
     <!-- Note: Order of scripts below is important!!! -->
 

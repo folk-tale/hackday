@@ -43,12 +43,10 @@ var photos = null;
 function authorize() {
   // Attempt to authorize
   realtimeUtils.authorize(function(response){
-    if (response.error){
-      // Authorization failed because this is the first time the user has used your application,
-      // show the authorization prompt before the photopicker.
-      realtimeUtils.authorize(function(response) {
-        start();
-      }, true);
+    if (response.error) {
+      if (typeof realtimeNeedsAuthorization == 'function') {
+        realtimeNeedsAuthorization(realtimeUtils, start);
+      }
     } else {
       start();
     }

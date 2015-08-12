@@ -5,19 +5,16 @@ body {
   width:320px;
   height:240px;
   position:absolute;
-  left: 20px;
-  top: 80px;
+  left: 0px;
   z-index: -1;
 }
 
 #photo {
-  border: 1px solid black;
   height:240px;
   width:320px;
   display: none;
   position:absolute;
-  left: 20px;
-  top: 105px;
+  top: 26px;
 }
 
 #canvas {
@@ -29,19 +26,16 @@ body {
 }
 
 #character_frame {
-  border: 2px solid black;
   width: 320px;
   position:absolute;
-  left: 20px;
-  top: 80px;
-}
+  left: 0px;
 }
 
-.camera {
+#output {
   width: 320px;
-  display:inline-block;
-  position:absolute;
-  left:40px;
+  height: 320px;
+  position: absolute;
+  left: 0px;
 }
 
 #circle {
@@ -56,20 +50,18 @@ body {
 }
 
 #buttons {
-  position: absolute;
   height:449px;
-  top: 80px;
-  left: 344px;
   width: 150px;
-  border: 2px solid black;
-  border-left: none;
-  text-align: center;
+  display: inline-block;
+  vertical-align: top;
+  margin-left: 60px;
+  margin-top: 30px;
 }
 
 #buttons div {
   -webkit-border-radius: 1;
   -moz-border-radius: 1;
-  border-radius: 1px;
+  border-radius: 5px;
   font-family: Arial;
   color: #ffffff;
   font-size: 16px;
@@ -77,6 +69,7 @@ body {
   text-decoration: none;
   font-weight: bold;
   letter-spacing: 0.5px;
+  margin-bottom: 10px;
 }
 
 #buttons div:hover {
@@ -106,6 +99,7 @@ body {
 
 #takephotobutton, #retakebutton{
   background: #3bd96d;
+  margin-top: 60px;
 }
 
 #takephotobutton:hover, #retakebutton:hover{
@@ -124,15 +118,13 @@ body {
   background: #ebab37;
 }
 
-.output {
-  width: 200px;
-  display:inline-block;
-}
-
 .contentarea {
   font-size: 14px;
   font-family: "Lucida Grande", "Arial", sans-serif;
   width: 760px;
+
+  margin: 0px auto;
+  margin-top: 100px;
 }
 
 #girl {
@@ -154,7 +146,17 @@ body {
   position: absolute;
 }
 
+.camera {
+  width: 320px;
+  display:inline-block;
+  position:relative;
+  margin-left: 50px;
+}
 
 #test {
   float:right;
+}
+
+#canvas2 {
+  display: none;
 }
