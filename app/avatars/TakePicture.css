@@ -97,12 +97,12 @@ body {
   margin-bottom: 130px;
 }
 
-#takephotobutton, #retakebutton{
+#takephotobutton, #donebutton{
   background: #3bd96d;
   margin-top: 60px;
 }
 
-#takephotobutton:hover, #retakebutton:hover{
+#takephotobutton:hover, #donebutton:hover{
   background: #33bd5c;
 }
 
@@ -110,11 +110,11 @@ body {
   display: none;
 }
 
-#donebutton {
+#retakebutton {
   background: #f8b438;
 }
 
-#donebutton:hover {
+#retakebutton:hover {
   background: #ebab37;
 }
 
@@ -122,9 +122,8 @@ body {
   font-size: 14px;
   font-family: "Lucida Grande", "Arial", sans-serif;
   width: 760px;
-
   margin: 0px auto;
-  margin-top: 100px;
+  margin-top: 60px;
 }
 
 #girl {
