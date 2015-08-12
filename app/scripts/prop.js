@@ -46,14 +46,6 @@ function authorize() {
     if (response.error){
       // Authorization failed because this is the first time the user has used your application,
       // show the authorization prompt before the photopicker.
-      /*var button = document.createElement('auth_button');
-      button.addEventListener('click', function () {
-        realtimeUtils.authorize(function(response){
-          start();
-        }, true);
-      });
-      button.click();*/
-
       realtimeUtils.authorize(function(response) {
         start();
       }, true);
@@ -105,6 +97,11 @@ function onFileInitialize(model) {
 function onFileLoaded(doc) {
   model = doc.getModel();
 
+    // Call authorize callback
+  if (typeof realtimeFileDidLoad == 'function') {
+    realtimeFileDidLoad();
+  }
+
   // Add current player to player list
   var players = model.getRoot().get('players');
   var currentPlayer = sessionStorage.getItem('name');
@@ -126,7 +123,6 @@ function onFileLoaded(doc) {
 
   // Let the user pick photos
   onApiLoad(realtimeUtils.authorizer.token);
-  //createPicker(realtimeUtils.authorizer.token);
 }
 
 function registerTypes(model) {

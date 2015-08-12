@@ -99,16 +99,15 @@
 
     </div> <!-- container -->
 
-    <!--<footer>
+    <footer>
        <div id="invite-wrapper">
         <div id="invite-text"></div>
-        // TODO: Make this a textarea for select to work
-        <div id="invite-link"></div>
+        <textarea id="invite-link" rows="1"></textarea>
         <script type="text/javascript">
 
           // Callback function invoked once the user has authorized
           // (We can't get the share link until the user has authorized)
-          function userDidAuthorize() {
+          function realtimeFileDidLoad() {
             var link = document.getElementById("invite-link");
             link.textContent = window.location.href;
             link.addEventListener("click", function() {
@@ -134,7 +133,7 @@
           });
         </script>
       </div> 
-    </footer>-->
+    </footer>
     
     <!-- Note: Order of scripts below is important!!! -->
 

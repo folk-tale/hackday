@@ -188,6 +188,9 @@ footer {
   padding: 10px;
   color: #999;
   cursor: pointer;
+  width: 100%;
+  resize: none;
+  font-size: 14pt;
 }
 
 #next-stage, #prev-stage {

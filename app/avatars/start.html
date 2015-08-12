@@ -20,5 +20,13 @@
   <div id="donebutton">I'm done!</div>
   <div id="warning"> Your name should be at least one letter</div>
   
+  <script>
+  document.addEventListener("keyup", function(event) {
+    if (event.keyCode == 13) { // Enter
+      document.getElementById("donebutton").click();
+    }
+  });
+  </script>
+
 </body>
 </html>
