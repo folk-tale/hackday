@@ -155,6 +155,7 @@
           var successful = document.execCommand('copy');
           var msg = successful ? 'successful' : 'unsuccessful';
           console.log('Copying text command was ' + msg);
+          alert("Copied to clipboard! Simply paste & send this link to a family member to invite them to join!");
         } catch (err) {
           console.log('Oops, unable to copy');
         }
