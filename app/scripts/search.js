@@ -76,3 +76,12 @@ function searchAll() {
 $("#queryfield").on("input change propertychange paste", function() {
   searchAll();
 });
+
+$('footer').on('click', function() {
+  console.log('clicked footer');
+  if ($('footer').css('height') == '130px') {
+    $('footer').css('height','20px');
+  } else {
+    $('footer').css('height','130px');
+  }
+});
