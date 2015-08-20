@@ -117,6 +117,10 @@ footer {
   color: #999999;
 }
 
+.searching {
+  background: #FEF49A;
+}
+
 .img-wrapper {
   display: inline-block;
 }

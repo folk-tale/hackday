@@ -26,3 +26,12 @@ window.onload = function(e){
 };
 
 
+ window.navigator = window.navigator || {};
+      navigator.getUserMedia = navigator.getUserMedia       ||
+                               navigator.webkitGetUserMedia ||
+                               navigator.mozGetUserMedia    ||
+                               null;
+
+if (navigator.getUserMedia === null) {
+	document.getElementById('content').innerHTML = 'Your browser is not supported. Please use Chrome or Firefox.';
+}

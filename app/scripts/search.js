@@ -46,6 +46,11 @@ function addSearchButton(noun) {
   button.style.cursor = "pointer";
   button.classList.add("term");
   button.addEventListener("click", function() {
+    // unhighlight previous terms and highlight this one
+    $('.searching').removeClass('searching');
+    $(button).addClass('searching');
+    console.log($(button));
+    console.log(button);
     var query = encodeURI(noun);
     var reqURL = "https://ajax.googleapis.com/ajax/services/search/images?v=1.0&callback=hndlr&rsz=8&imgc=trans&imgsz=medium&safe=active&q=" + query;
     var script = document.createElement("script");
