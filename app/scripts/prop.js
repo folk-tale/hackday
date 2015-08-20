@@ -51,6 +51,7 @@ function authorize() {
       start();
     }
   }, false);
+
   onApiLoad(realtimeUtils.authorizer.token);
 }
 
@@ -103,7 +104,7 @@ function onFileLoaded(doc) {
   // Add current player to player list
   var players = model.getRoot().get('players');
   var currentPlayer = sessionStorage.getItem('name');
-  if (currentPlayer && players && players.indexOf(currentPlayer) == -1 && currentPlayer!='alice') {
+  if (currentPlayer && players && players.indexOf(currentPlayer) == -1) {
     players.push(currentPlayer);
   }
 
@@ -121,6 +122,9 @@ function onFileLoaded(doc) {
 
   // Let the user pick photos
   onApiLoad(realtimeUtils.authorizer.token);
+
+  // add eventlistener for collaborator joined
+  doc.addEventListener(gapi.drive.realtime.EventType.COLLABORATOR_JOINED, displayCollaboratorEvent);
 }
 
 function registerTypes(model) {
@@ -556,7 +560,9 @@ function registerTypes(model) {
   registerProps();
   registerScene();
   registerStage();
+
 }
+
 
 //----- Begin wrapper API -----//
 
@@ -642,6 +648,7 @@ function removeProp(propID) {
  * Parameters:
  * photos (list) - A list of image URLs to serve as backgrounds for
  *                 the additional scenes.
+ * photoIds (list) - A list of imageIDs of the background photos
  */
 function addScenes(photos) {
   if (photos == undefined || !photos || photos.length == 0) {
@@ -722,4 +729,23 @@ function addShrinkButton($imgWrapper) {
     var propId = $(this).parent().attr('id');
     props[propId].sync();
   });
+}
+
+function displayCollaboratorEvent(evt) {
+  var user = evt.collaborator;
+  console.log('User ID:'    + user.userId);
+  console.log('Session ID:' + user.sessionId);
+  console.log('Name:'       + user.displayName);
+  console.log('Color:'      + user.color);
+}
+
+
+function displayAllCollaborators(doc) {
+  var collaborators = doc.getCollaborators();
+  var collaboratorCount = collaborators.length;
+  console.log(collaboratorCount + ' collaborators:');
+  for (var i = 0; i < collaboratorCount; i++) {
+    var user = collaborators[collaboratorCount];
+    console.log(user);
+  }
 }
