@@ -26,7 +26,7 @@ footer {
   position: fixed;
   width: 100%;
   background: #6ECCDC;
-  height: 130px;
+  height: auto;
   bottom: 0px;
   z-index: 1000;
   border-top: 1px solid #488691;
@@ -218,6 +218,11 @@ footer {
   padding: 20px;
 }
 
+.footer-text {
+  font-size: 14pt;
+  padding: 5px;
+}
+
 #invite-link {
   border: 1px solid #488691;
   background: #CFEEFF;
@@ -249,6 +254,27 @@ footer {
 #prev-stage {
   left:5px;
   cursor: pointer;
+}
+
+#footer-next, #footer-prev {
+  text-decoration: none;
+  position: absolute;
+  top: 50%;
+  font-size: 20px;
+  transform: translateY(-50%);
+  color: gray;
+  background-color: #FEF49A;
+  padding: 50px 5px;
+  margin-right:10px;
+  cursor: pointer;
+}
+
+#footer-next {
+  right: 5px;
+}
+
+#footer-prev {
+  left: 5px;
 }
 
 #queryfield {
@@ -307,6 +333,56 @@ footer {
   height: 100px;
   border: 1px solid #999999;
 }
+
+.glow {
+  -webkit-animation-name: yellowPulse;
+  -webkit-animation-duration: 2s;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-font-smoothing: antialiased;
+  transition-timing-function: ease-out;
+}
+
+@-webkit-keyframes yellowPulse {
+  from {
+    background: #FEF49A;
+    background: -webkit-radial-gradient(center center, ellipse cover, yellow 0%, rgba(255,255,255,0) 20%); 
+    background: -moz-radial-gradient(center, ellipse cover, yellow 0%, rgba(255,255,255,0) 20%); 
+    background: radial-gradient(center, ellipse cover, yellow 0%, rgba(255,255,255,0) 20%); 
+  }
+  50% { 
+    background: #FEF49A;
+    background: -webkit-radial-gradient(center center, ellipse cover, yellow 0%, rgba(255,255,255,0) 70%); 
+    background: -moz-radial-gradient(center, ellipse cover, yellow 0%, rgba(255,255,255,0) 70%); 
+    background: radial-gradient(center, ellipse cover, yellow 0%, rgba(255,255,255,0) 70%); 
+  }
+  to {
+    background: #FEF49A;
+    background: -webkit-radial-gradient(center center, ellipse cover, yellow 0%, rgba(255,255,255,0) 20%); 
+    background: -moz-radial-gradient(center, ellipse cover, yellow 0%, rgba(255,255,255,0) 20%); 
+    background: radial-gradient(center, ellipse cover, yellow 0%, rgba(255,255,255,0) 20%); 
+  }
+}
+
+.blink {
+  -webkit-animation-name: yellowBlink;
+  -webkit-animation-duration: 2s;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-font-smoothing: antialiased;
+  transition-timing-function: ease-out;
+}
+
+@-webkit-keyframes yellowBlink {
+  from {
+    background-color:yellow;
+  }
+  50% {
+    background-color:white;
+  }
+  to { 
+    background-color:yellow;
+  }
+}
+
 
 @font-face {
   font-family: Kiddish;

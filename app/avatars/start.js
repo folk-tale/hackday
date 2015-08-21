@@ -33,5 +33,5 @@ window.onload = function(e){
                                null;
 
 if (navigator.getUserMedia === null) {
-	document.getElementById('content').innerHTML = 'Your browser is not supported. Please use Chrome or Firefox.';
+	document.getElementById('content').innerHTML = '<p>Sorry, your browser is not supported. Please use Chrome or Firefox.</p>';
 }

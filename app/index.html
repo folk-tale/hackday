@@ -81,7 +81,7 @@
           <!--<button onclick="s.showSettingsDialog()" style="display:block;">Share</button>-->
 
           <div id="results-container">
-            <h5>Props</h5>
+            <h5>Backstage</h5>
             <hr />
             <div class="results" id="content"></div>
           </div> <!-- results-container -->
@@ -110,8 +110,22 @@
 
       <footer>
          <div id="invite-wrapper">
-          <div id="invite-text"></div>
-          <textarea id="invite-link" rows="1"></textarea>
+          <div id="footer1">
+            <div class="footer-text">Do you have a fellow dragon ready to join? Send them this link!</div>
+            <textarea id="invite-link" rows="1"></textarea>
+          </div>
+          <div class="hidden" id="footer2">
+            <div class="footer-text">While you're waiting for your dragon friend, try dragging yourself from backstage onto the scene.</div>
+          </div>
+          <div class="hidden" id="footer3">
+            <div class="footer-text">Great! On the top of the screen is the story narration. Try completing the sentence!</div>
+          </div>
+           <div class="hidden" id="footer4">
+            <div class="footer-text">Nice! Now let's look at the prop generator (top right). Click on a word (nouns work best)!</div>
+          </div>
+          <div class="hidden" id="footer5">
+            <div class="footer-text">Looks like you've got the hang of it! Now you have more props for your story! Whenever you're ready, go ahead to the next page.</div>
+          </div>
         </div> 
       </footer>
 
@@ -138,10 +152,6 @@
         link.addEventListener("click", function() {
 
         });
-        var people = ["Grandma", "Grandpa", "Mom", "Dad", "Auntie", "Uncle"];
-        var randomPerson = people[Math.floor(Math.random() * people.length)];
-        var text = document.getElementById("invite-text");
-        text.textContent = "Invite " + randomPerson + "! (click to copy link):";
 
         document.getElementById("authorized-content").style.display = "block";
         document.getElementById("authorization-dialog").style.display = "none";
@@ -155,7 +165,8 @@
           var successful = document.execCommand('copy');
           var msg = successful ? 'successful' : 'unsuccessful';
           console.log('Copying text command was ' + msg);
-          alert("Copied to clipboard! Simply paste & send this link to a family member to invite them to join!");
+          alert("Copied to clipboard! Simply paste & send this link with your soon-to-be dragon friend!");
+          $('#invite-link').trigger('copied');
         } catch (err) {
           console.log('Oops, unable to copy');
         }
