@@ -74,6 +74,7 @@ function start() {
       realtimeUtils.load(createResponse.id, onFileLoaded, onFileInitialize);
     });
     // show EDU
+    $('#overlay').toggle();
     toggleFooter();
   }
 }

@@ -75,9 +75,11 @@ function searchAll() {
   }
 }
 
+// Toggle (slide up/ slide down) footer help bar
 function toggleFooter() {
-  $('#overlay').toggle();
   $('#footer-help').toggle('slide', { direction: "down" });
+  $('.footer-wrapper').addClass('hidden');
+  $('#footer1').removeClass('hidden');
 }
 
 // Auto search as user types
@@ -85,24 +87,20 @@ $("#queryfield").on("input change propertychange paste", function() {
   searchAll();
 });
 
-$("#invite-link").bind('copy', function() {
-  $('#invite-link').trigger('copied');
-}); 
-
-$('#footer5').click(function(){
+// Collapse instructions footer on click
+$('#closable-footers').click(function(){
   $('#footer-help').toggle('slide', { direction: "down" });
 });
 
-// EDU 
-$('#invite-link').on('copied', function () {
+// Give more instructions after user copies invite link
+$("#invite-link").on('copy', function() {
   alert("Copied to clipboard! Simply paste & send this link with your soon-to-be dragon friend!");
-  $('#footer-next').addClass('hidden');
   $('#footer1').addClass('hidden');
   $('#footer2').removeClass('hidden');
   $('#overlay').addClass('hidden');
 
+  // if own avatar is backstage, tell user to put it into the stage
   var myAvatar = $('.avatar').first();
-
   if ($('.avatar').first()[0]) {
     myAvatar.addClass('glow');
     myAvatar.mouseup(function() {
@@ -110,11 +108,14 @@ $('#invite-link').on('copied', function () {
       myAvatar.removeClass('glow');
       narrationEdu();
     });
-  } else {
+  } 
+  // if avatar is already on the scene, tell user about the narration
+  else {
     narrationEdu();
   }
 });
 
+// EDU about narration
 function narrationEdu() {
   $('#footer2').addClass('hidden');
   $('#footer3').removeClass('hidden');
@@ -126,6 +127,7 @@ function narrationEdu() {
   });
 }
 
+// EDU about prop generator
 function propGeneratorEdu(e) {
   if (e.keyCode === 0 || e.keyCode === 32 || e.keyCode === 190 || e.keyCode === 188 || e.keyCode === 110  || e.keyCode === 46 || e.keyCode === 44) {
     $("#queryfield").off('keypress');
@@ -139,12 +141,3 @@ function propGeneratorEdu(e) {
     });
   }
 }
-
-// $('footer').on('click', function() {
-//   console.log('clicked footer');
-//   if ($('footer').css('height') == '130px') {
-//     $('footer').css('height','20px');
-//   } else {
-//     $('footer').css('height','130px');
-//   }
-// });
