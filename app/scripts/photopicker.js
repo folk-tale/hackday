@@ -72,6 +72,7 @@ function pickerCallback(data, oauthToken) {
 
       // Add a new scene for each selected image
       addScenes(imageUrls);
+
     }
     // Error - user didn't pick enough pictures 
     else {

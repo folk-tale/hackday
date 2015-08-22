@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 
+  <div id='overlay' style="display: none;"></div>
+
   <head>
 
     <title>Folktale</title>
@@ -18,8 +20,8 @@
 
   </head>
 
-  <body>
 
+  <body>
     <!-- Unneeded HTML from WebSpeech demo -->
     <div style="display: none;">
       <div id="info">
@@ -109,24 +111,30 @@
       </div> <!-- container -->
 
       <footer>
-         <div id="invite-wrapper">
-          <div id="footer1">
-            <div class="footer-text">Do you have a fellow dragon ready to join? Send them this link!</div>
-            <textarea id="invite-link" rows="1"></textarea>
-          </div>
-          <div class="hidden" id="footer2">
-            <div class="footer-text">While you're waiting for your dragon friend, try dragging yourself from backstage onto the scene.</div>
-          </div>
-          <div class="hidden" id="footer3">
-            <div class="footer-text">Great! On the top of the screen is the story narration. Try completing the sentence!</div>
-          </div>
-           <div class="hidden" id="footer4">
-            <div class="footer-text">Nice! Now let's look at the prop generator (top right). Click on a word (nouns work best)!</div>
-          </div>
-          <div class="hidden" id="footer5">
-            <div class="footer-text">Looks like you've got the hang of it! Now you have more props for your story! Whenever you're ready, go ahead to the next page.</div>
-          </div>
-        </div> 
+        <div id='footer-info'>
+        <img src='img/logo-dbh.png' id='btm-logo'>
+        <div id='footer-right'><span id='feedback'><a href="https://docs.google.com/forms/d/1W_llTUxRNXHmzt0pBUjOn6w19d7leLTf1k9DwuDui9s/viewform" target='_blank'>Give Feedback</a></span> | <span id='help' onclick='toggleFooter()'>Instructions</span></div> 
+        </div>
+        <div id='footer-help' class="hidden">
+          <div id="footer-wrapper">
+            <div id="footer1">
+              <div class="footer-text">Invite a fellow dragon by sending them this link! Copy to continue.</div>
+              <textarea id="invite-link" rows="1"></textarea>
+            </div>
+            <div class="hidden" id="footer2">
+              <div class="footer-text">While you're waiting for your dragon friend, try dragging yourself from backstage onto the scene.</div>
+            </div>
+            <div class="hidden" id="footer3">
+              <div class="footer-text">Great! On the top of the screen is the story narration. Try completing the sentence!</div>
+            </div>
+             <div class="hidden" id="footer4">
+              <div class="footer-text">Nice! Now let's look at the Prop Generator. Click on a word (nouns work best)!</div>
+            </div>
+            <div class="hidden" id="footer5">
+              <div class="footer-text">Now there's more props to drag into your story! Whenever you're ready, go ahead to the next page. (Click to close)</div>
+            </div>
+          </div> 
+        </div>
       </footer>
 
     </div> <!-- Authorized content -->
@@ -165,8 +173,6 @@
           var successful = document.execCommand('copy');
           var msg = successful ? 'successful' : 'unsuccessful';
           console.log('Copying text command was ' + msg);
-          alert("Copied to clipboard! Simply paste & send this link with your soon-to-be dragon friend!");
-          $('#invite-link').trigger('copied');
         } catch (err) {
           console.log('Oops, unable to copy');
         }

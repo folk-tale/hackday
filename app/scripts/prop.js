@@ -73,6 +73,8 @@ function start() {
       window.history.pushState(null, null, '?id=' + createResponse.id);
       realtimeUtils.load(createResponse.id, onFileLoaded, onFileInitialize);
     });
+    // show EDU
+    toggleFooter();
   }
 }
 
