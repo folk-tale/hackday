@@ -141,3 +141,10 @@ function propGeneratorEdu(e) {
     });
   }
 }
+
+function confirmNew() {
+  var r = confirm("Are you sure you want to start a new story?");
+  if (r == true) {
+      window.open('index.html');
+  } 
+}
