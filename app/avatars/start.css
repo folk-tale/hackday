@@ -1,9 +1,32 @@
+html, body {
+  background: #F6F0E6;
+  font-family: "Lucida Grande", "Arial", sans-serif;
+  font-size: 14pt;
+  padding: 0px;
+  margin: 0px;
+  height: 100%;
+}
+
+a:link {
+  text-decoration: none;
+  color: black;
+}
+
+a:link:hover {
+  color:#f8b438;
+}
+
+a:visited {
+  color:#2a5f7a;
+}
+
 #name {
 	font-size: 24px;
 	border: 0;
 	border-bottom: 2px dashed #ccc;
 	width: 310px;
 	box-shadow: none;
+  background-color: transparent;
 	min-height: 40px;
   text-align: center;
   letter-spacing: 1.8px;
@@ -12,6 +35,10 @@
 body {
   font-family: "Lucida Grande", "Arial", sans-serif;
   padding: 50px 20px;
+}
+
+h2 {
+  font-size: 1.3em;
 }
 
 img {
@@ -53,4 +80,43 @@ img {
   margin: 0px auto;
   margin-top: 60px;
   text-align: center;
+}
+
+#footer-right {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  margin: 10px 40px;
+}
+
+#footer-help {
+  position: fixed;
+  width: 100%;
+  background: #c8e9f3;
+  height: auto;
+  bottom: 0px;
+  z-index: 1000;
+  border-top: 2px solid #6fccdd;
+}
+
+#footer-info {
+  position: fixed;
+  left:0;
+  width: 100%;
+  background: #C8E9F3;
+  height: 45px;
+  bottom: 0px;
+  z-index: 999;
+  border-top: 2px solid #2a5f7a;
+  padding: 5px 40px 0px 40px;
+}
+
+#btm-logo {
+  height:95%;
+  width:auto;
+  padding:auto 20px;
+}
+
+#about, #video, #design {
+  cursor: pointer;
 }

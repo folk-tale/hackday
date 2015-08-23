@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 
+  <div id='overlay' style="display: none;"></div>
+
   <head>
 
     <title>Folktale</title>
@@ -18,8 +20,8 @@
 
   </head>
 
-  <body>
 
+  <body>
     <!-- Unneeded HTML from WebSpeech demo -->
     <div style="display: none;">
       <div id="info">
@@ -81,7 +83,7 @@
           <!--<button onclick="s.showSettingsDialog()" style="display:block;">Share</button>-->
 
           <div id="results-container">
-            <h5>Props</h5>
+            <h5>Backstage</h5>
             <hr />
             <div class="results" id="content"></div>
           </div> <!-- results-container -->
@@ -109,10 +111,30 @@
       </div> <!-- container -->
 
       <footer>
-         <div id="invite-wrapper">
-          <div id="invite-text"></div>
-          <textarea id="invite-link" rows="1"></textarea>
-        </div> 
+        <div id='footer-info'>
+        <a href='#' onclick='confirmNew()'><img src='img/logo-dbh.png' id='btm-logo'></a>
+        <div id='footer-right'><span id='feedback'><a href="https://docs.google.com/forms/d/1W_llTUxRNXHmzt0pBUjOn6w19d7leLTf1k9DwuDui9s/viewform" target='_blank'>Give Feedback</a></span> | <span id='help' onclick='toggleFooter()'>Instructions</span></div> 
+        </div>
+        <div id='footer-help' class="hidden">
+          <div id="footer1" class="footer-wrapper">
+            <div class="footer-text">Invite a family member by sending them this link! Copy to continue. (Tip: video call your family member while you use Folktale!)</div>
+            <textarea id="invite-link" rows="1" readonly="readonly"></textarea>
+          </div>
+          <div id='closable-footers'>
+            <div class="hidden footer-wrapper" id="footer2">
+              <div class="footer-text">While you're waiting for your dragon friend, try dragging yourself from backstage onto the scene.</div>
+            </div>
+            <div class="hidden footer-wrapper" id="footer3">
+              <div class="footer-text">Great! On the top of the screen is the story narration. Try completing the sentence!</div>
+            </div>
+             <div class="hidden footer-wrapper" id="footer4">
+              <div class="footer-text">Nice! Now let's look at the Prop Generator. Click on a word (nouns work best)!</div>
+            </div>
+            <div class="hidden footer-wrapper" id="footer5">
+              <div class="footer-text">Now there's more props to drag into your story! Whenever you're ready, go ahead to the next page. (Click to close)</div>
+            </div>
+          </div>
+        </div>
       </footer>
 
     </div> <!-- Authorized content -->
@@ -136,30 +158,25 @@
         var link = document.getElementById("invite-link");
         link.textContent = window.location.href;
         link.addEventListener("click", function() {
-
+          $(link).select();
         });
-        var people = ["Grandma", "Grandpa", "Mom", "Dad", "Auntie", "Uncle"];
-        var randomPerson = people[Math.floor(Math.random() * people.length)];
-        var text = document.getElementById("invite-text");
-        text.textContent = "Invite " + randomPerson + "! (click to copy link):";
-
         document.getElementById("authorized-content").style.display = "block";
         document.getElementById("authorization-dialog").style.display = "none";
       }
       // Copy-on-click (uses some *very* new features....support might
       // not be widespread but as long as you're on Chrome you'll prolly
       // be okay.)
-      document.querySelector('#invite-link').addEventListener("click", function() {
-        this.select();
-        try {
-          var successful = document.execCommand('copy');
-          var msg = successful ? 'successful' : 'unsuccessful';
-          console.log('Copying text command was ' + msg);
-          alert("Copied to clipboard! Simply paste & send this link to a family member to invite them to join!");
-        } catch (err) {
-          console.log('Oops, unable to copy');
-        }
-      });
+      // Alice: commented out because something's wonky, even for Chrome.
+      // document.querySelector('#invite-link').addEventListener("click", function() {
+      //   this.select();
+      //   try {
+      //     var successful = document.execCommand('copy');
+      //     var msg = successful ? 'successful' : 'unsuccessful';
+      //     console.log('Copying text command was ' + msg);
+      //   } catch (err) {
+      //     console.log('Oops, unable to copy');
+      //   }
+      // });
     </script>
     
     <!-- Note: Order of scripts below is important!!! -->

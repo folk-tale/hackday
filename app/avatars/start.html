@@ -4,23 +4,36 @@
   <title>Folktale</title>
   <meta charset='utf-8'>
   <link rel="stylesheet" href="start.css" type="text/css" media="all">
-  <script src="start.js"></script>
   <script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
 </head>
 <body>
 
   <div class="center" style="width: 450px">
-    <img src="../images/logo-trans.png">
+    <img src="../img/logo-trans.png">
 
-    <h2>
-      Hello! What's your name?
-    </h2>
+    <div id="content">
+      <h2>
+        Hello! What's your name?
+      </h2>
 
-    <input name="name" type="text" id="name"></input>
+      <input name="name" type="text" id="name"></input>
 
-    <div id="donebutton">NEXT</div>
-    <div id="warning"> Your name should be at least one letter</div>
-    
+      <div id="donebutton">NEXT</div>
+      <div id="warning"> Your name should be at least one letter</div>
+    </div>
+    </div>
+  </div>
+
+</body>
+
+<footer>
+  <div id='footer-info'>
+    <img src='../img/logo-dbh.png' id='btm-logo'>
+    <div id='footer-right'><span id='about'><a href='https://docs.google.com/document/d/1Y-IjWV-PJbsiHCpb9pMtyJXQ1SxmHMw9FkM_nlaHmFU' target='_blank'>Report</a></span> | <span id='video'><a href='https://www.youtube.com/watch?v=B4YenlfR03Y' target='_blank'>Video</a></span> | <span id='design'><a href='https://docs.google.com/document/d/1x-szLDfL4R-3DpjiKLAvl7ajJcWPrOxXzG8pvvXwGXU' target='_blank'>Design Principles</a></span></div> 
+  </div>
+</footer>
+ 
+ <script src="start.js"></script>
     <script>
     document.addEventListener("keyup", function(event) {
       if (event.keyCode == 13) { // Enter
@@ -28,7 +41,4 @@
       }
     });
     </script>
-  </div>
-
-</body>
 </html>

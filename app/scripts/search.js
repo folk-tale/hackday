@@ -46,6 +46,9 @@ function addSearchButton(noun) {
   button.style.cursor = "pointer";
   button.classList.add("term");
   button.addEventListener("click", function() {
+    // unhighlight previous terms and highlight this one
+    $('.searching').removeClass('searching');
+    $(button).addClass('searching');
     var query = encodeURI(noun);
     var reqURL = "https://ajax.googleapis.com/ajax/services/search/images?v=1.0&callback=hndlr&rsz=8&imgc=trans&imgsz=medium&safe=active&q=" + query;
     var script = document.createElement("script");
@@ -72,16 +75,76 @@ function searchAll() {
   }
 }
 
+// Toggle (slide up/ slide down) footer help bar
+function toggleFooter() {
+  $('#footer-help').toggle('slide', { direction: "down" });
+  $('.footer-wrapper').addClass('hidden');
+  $('#footer1').removeClass('hidden');
+}
+
 // Auto search as user types
 $("#queryfield").on("input change propertychange paste", function() {
   searchAll();
 });
 
-$('footer').on('click', function() {
-  console.log('clicked footer');
-  if ($('footer').css('height') == '130px') {
-    $('footer').css('height','20px');
-  } else {
-    $('footer').css('height','130px');
+// Collapse instructions footer on click
+$('#closable-footers').click(function(){
+  $('#footer-help').toggle('slide', { direction: "down" });
+});
+
+// Give more instructions after user copies invite link
+$("#invite-link").on('copy', function() {
+  alert("Copied to clipboard! Simply paste & send this link with your soon-to-be dragon friend!");
+  $('#footer1').addClass('hidden');
+  $('#footer2').removeClass('hidden');
+  $('#overlay').addClass('hidden');
+
+  // if own avatar is backstage, tell user to put it into the stage
+  var myAvatar = $('.avatar').first();
+  if ($('.avatar').first()[0]) {
+    myAvatar.addClass('glow');
+    myAvatar.mouseup(function() {
+      myAvatar.off('mouseup');
+      myAvatar.removeClass('glow');
+      narrationEdu();
+    });
+  } 
+  // if avatar is already on the scene, tell user about the narration
+  else {
+    narrationEdu();
   }
 });
+
+// EDU about narration
+function narrationEdu() {
+  $('#footer2').addClass('hidden');
+  $('#footer3').removeClass('hidden');
+  $('#queryfield').select();
+
+  $("#queryfield").keypress(function(e) {
+    console.log('propGeneratorEdu');
+    propGeneratorEdu(e);
+  });
+}
+
+// EDU about prop generator
+function propGeneratorEdu(e) {
+  if (e.keyCode === 0 || e.keyCode === 32 || e.keyCode === 190 || e.keyCode === 188 || e.keyCode === 110  || e.keyCode === 46 || e.keyCode === 44) {
+    $("#queryfield").off('keypress');
+    $('#footer3').addClass('hidden');
+    $('#footer4').removeClass('hidden');
+    $('#terms').click(function(){
+      console.log('click');
+      $('.term').off('click');
+      $('#footer4').addClass('hidden');
+      $('#footer5').removeClass('hidden');
+    });
+  }
+}
+
+function confirmNew() {
+  var r = confirm("Are you sure you want to start a new story?");
+  if (r == true) {
+      window.open('index.html');
+  } 
+}

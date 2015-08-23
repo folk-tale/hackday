@@ -108,6 +108,7 @@ function getURLParameter(name) {
       video.style.display = 'inline';
       retake.style.display = 'none';
       takephotobutton.style.display = 'block';
+      donebutton.style.display = 'none';
       ev.preventDefault();
     }, false);
 

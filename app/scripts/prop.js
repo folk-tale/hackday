@@ -51,6 +51,7 @@ function authorize() {
       start();
     }
   }, false);
+
   onApiLoad(realtimeUtils.authorizer.token);
 }
 
@@ -72,6 +73,9 @@ function start() {
       window.history.pushState(null, null, '?id=' + createResponse.id);
       realtimeUtils.load(createResponse.id, onFileLoaded, onFileInitialize);
     });
+    // show EDU
+    $('#overlay').toggle();
+    toggleFooter();
   }
 }
 
@@ -103,7 +107,7 @@ function onFileLoaded(doc) {
   // Add current player to player list
   var players = model.getRoot().get('players');
   var currentPlayer = sessionStorage.getItem('name');
-  if (currentPlayer && players && players.indexOf(currentPlayer) == -1 && currentPlayer!='alice') {
+  if (currentPlayer && players && players.indexOf(currentPlayer) == -1) {
     players.push(currentPlayer);
   }
 
@@ -121,6 +125,9 @@ function onFileLoaded(doc) {
 
   // Let the user pick photos
   onApiLoad(realtimeUtils.authorizer.token);
+
+  // add eventlistener for collaborator joined
+  doc.addEventListener(gapi.drive.realtime.EventType.COLLABORATOR_JOINED, displayCollaboratorEvent);
 }
 
 function registerTypes(model) {
@@ -133,6 +140,7 @@ function registerTypes(model) {
     Prop.prototype.top = gapi.drive.realtime.custom.collaborativeField('top');
     Prop.prototype.width = gapi.drive.realtime.custom.collaborativeField('width');
     Prop.prototype.height = gapi.drive.realtime.custom.collaborativeField('height');
+    Prop.prototype.zIndex = gapi.drive.realtime.custom.collaborativeField('zIndex');
     Prop.prototype.imageURL = gapi.drive.realtime.custom.collaborativeField('imageURL');
     Prop.prototype.active = gapi.drive.realtime.custom.collaborativeField('active');
 
@@ -145,13 +153,18 @@ function registerTypes(model) {
     // top (string) - CSS 'top' property of the DOM element
     // width (string) - CSS 'width' property of the img inside the DOM element
     // height (string) - CSS 'height' property of the img inside the DOM element
+    // zIndex (string) - CSS 'zIndex' property of the DOM element
     // imageURL (string) - URL to the prop's image
-    Prop.prototype.init = function(id, left, top, width, height, imageURL) {
+    Prop.prototype.init = function(id, left, top, width, height, zIndex, imageURL) {
       this.id = id;
       this.left = left;
       this.top = top;
       this.width = width;
       this.height = height;
+      this.zIndex = zIndex;
+
+            console.log('init' + this.zIndex);
+
       this.imageURL = imageURL;
       this.active = true;
     }
@@ -190,7 +203,10 @@ function registerTypes(model) {
         this.img = $(this.elem).children('img');
         this.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, this.update);
       }
-      $(this.elem).css({"top": this.top, "left": this.left});
+      $(this.elem).css({"top": this.top, "left": this.left, "zIndex": this.zIndex});
+
+            console.log('onload' + this.zIndex);
+
       $(this.img).width(this.width).height(this.height);
       if (this.active) {
         $(this.elem).addClass('onScene');
@@ -206,7 +222,10 @@ function registerTypes(model) {
       if (!event.isLocal) {
         // Update position, visibility, and dimensions
         var prop = event.target;
-        $(prop.elem).css({"top": prop.top, "left": prop.left});
+        $(prop.elem).css({"top": prop.top, "left": prop.left, "zIndex": prop.zIndex});
+
+              console.log('update' + this.zIndex);
+
         $(prop.img).width(prop.width).height(prop.height);
         if (prop.active) {
           $(prop.elem).addClass('onScene');
@@ -234,6 +253,8 @@ function registerTypes(model) {
       this.top = $(this.elem).css("top");
       this.width = $(this.img).css("width");
       this.height = $(this.img).css("height");
+      this.zIndex = $(this.elem).css("zIndex");
+      console.log('sync' + this.zIndex);
     }
 
     Prop.prototype.stash = function() {
@@ -556,7 +577,9 @@ function registerTypes(model) {
   registerProps();
   registerScene();
   registerStage();
+
 }
+
 
 //----- Begin wrapper API -----//
 
@@ -611,12 +634,16 @@ function makeDraggableElement(url, id, additionalClasses) {
  * propURL (string) - image URL for the prop
  */
 function addProp(propElem) {
+
+        console.log('addProp' + propElem.childNodes[0].style.zIndex);
+
   // Create prop
   var prop = model.create(Prop, propElem.id, 
                                 propElem.style.left, 
                                 propElem.style.top, 
                                 propElem.childNodes[0].style.width,
                                 propElem.childNodes[0].style.height,
+                                propElem.style.zIndex,
                                 propElem.childNodes[0].src);
 
   // Add prop to current scene
@@ -642,6 +669,7 @@ function removeProp(propID) {
  * Parameters:
  * photos (list) - A list of image URLs to serve as backgrounds for
  *                 the additional scenes.
+ * photoIds (list) - A list of imageIDs of the background photos
  */
 function addScenes(photos) {
   if (photos == undefined || !photos || photos.length == 0) {
@@ -722,4 +750,23 @@ function addShrinkButton($imgWrapper) {
     var propId = $(this).parent().attr('id');
     props[propId].sync();
   });
+}
+
+function displayCollaboratorEvent(evt) {
+  var user = evt.collaborator;
+  console.log('User ID:'    + user.userId);
+  console.log('Session ID:' + user.sessionId);
+  console.log('Name:'       + user.displayName);
+  console.log('Color:'      + user.color);
+}
+
+
+function displayAllCollaborators(doc) {
+  var collaborators = doc.getCollaborators();
+  var collaboratorCount = collaborators.length;
+  console.log(collaboratorCount + ' collaborators:');
+  for (var i = 0; i < collaboratorCount; i++) {
+    var user = collaborators[collaboratorCount];
+    console.log(user);
+  }
 }
