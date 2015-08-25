@@ -95,24 +95,27 @@ $('#closable-footers').click(function(){
 // Give more instructions after user copies invite link
 $("#invite-link").on('copy', function() {
   alert("Copied to clipboard! Simply paste & send this link with your soon-to-be dragon friend!");
-  $('#footer1').addClass('hidden');
-  $('#footer2').removeClass('hidden');
-  $('#overlay').addClass('hidden');
 
-  // if own avatar is backstage, tell user to put it into the stage
-  var myAvatar = $('.avatar').first();
-  if ($('.avatar').first()[0]) {
-    myAvatar.addClass('glow');
-    myAvatar.mouseup(function() {
-      myAvatar.off('mouseup');
-      myAvatar.removeClass('glow');
+  setInterval(function() {
+    $('#footer1').addClass('hidden');
+    $('#footer2').removeClass('hidden');
+    $('#overlay').addClass('hidden');
+
+    // if own avatar is backstage, tell user to put it into the stage
+    var myAvatar = $('.avatar').first();
+    if ($('.avatar').first()[0]) {
+      myAvatar.addClass('glow');
+      myAvatar.mouseup(function() {
+        myAvatar.off('mouseup');
+        myAvatar.removeClass('glow');
+        narrationEdu();
+      });
+    } 
+    // if avatar is already on the scene, tell user about the narration
+    else {
       narrationEdu();
-    });
-  } 
-  // if avatar is already on the scene, tell user about the narration
-  else {
-    narrationEdu();
-  }
+    }
+  }, 1000);
 });
 
 // EDU about narration
