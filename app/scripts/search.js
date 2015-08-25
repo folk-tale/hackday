@@ -96,7 +96,7 @@ $('#closable-footers').click(function(){
 $("#invite-link").on('copy', function() {
   alert("Copied to clipboard! Simply paste & send this link with your soon-to-be dragon friend!");
 
-  setInterval(function() {
+  setTimeout(function() {
     $('#footer1').addClass('hidden');
     $('#footer2').removeClass('hidden');
     $('#overlay').addClass('hidden');
