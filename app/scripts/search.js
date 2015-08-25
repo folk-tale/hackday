@@ -93,8 +93,7 @@ $('#closable-footers').click(function(){
 });
 
 // Give more instructions after user copies invite link
-$("#invite-link").on('copy', function() {
-  alert("Copied to clipboard! Simply paste & send this link with your soon-to-be dragon friend!");
+$("#footer1").on('click', function() {
   $('#footer1').addClass('hidden');
   $('#footer2').removeClass('hidden');
   $('#overlay').addClass('hidden');
@@ -122,24 +121,23 @@ function narrationEdu() {
   $('#queryfield').select();
 
   $("#queryfield").keypress(function(e) {
-    console.log('propGeneratorEdu');
-    propGeneratorEdu(e);
+    if (e.keyCode === 0 || e.keyCode === 32 || e.keyCode === 190 || e.keyCode === 188 || e.keyCode === 110  || e.keyCode === 46 || e.keyCode === 44) {
+      $("#queryfield").off('keypress');
+      propGeneratorEdu();
+    }
   });
+
 }
 
 // EDU about prop generator
 function propGeneratorEdu(e) {
-  if (e.keyCode === 0 || e.keyCode === 32 || e.keyCode === 190 || e.keyCode === 188 || e.keyCode === 110  || e.keyCode === 46 || e.keyCode === 44) {
-    $("#queryfield").off('keypress');
-    $('#footer3').addClass('hidden');
-    $('#footer4').removeClass('hidden');
-    $('#terms').click(function(){
-      console.log('click');
-      $('.term').off('click');
-      $('#footer4').addClass('hidden');
-      $('#footer5').removeClass('hidden');
-    });
-  }
+  $('#footer3').addClass('hidden');
+  $('#footer4').removeClass('hidden');
+  $('#terms').click(function(){
+    $('.term').off('click');
+    $('#footer4').addClass('hidden');
+    $('#footer5').removeClass('hidden');
+  });
 }
 
 function confirmNew() {
