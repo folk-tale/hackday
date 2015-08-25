@@ -23,9 +23,9 @@ function checkSignupFlow() {
 
   } else if (!sessionStorage.getItem('cmb')) {
     if (id)
-      window.location.replace("./avatars/takePicture.html?id="+id);
+      window.location.replace("./avatars/TakePicture.html?id="+id);
     else 
-      window.location.replace("./avatars/takePicture.html");
+      window.location.replace("./avatars/TakePicture.html");
   }
 }
 
