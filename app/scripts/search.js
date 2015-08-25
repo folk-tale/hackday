@@ -125,24 +125,23 @@ function narrationEdu() {
   $('#queryfield').select();
 
   $("#queryfield").keypress(function(e) {
-    console.log('propGeneratorEdu');
-    propGeneratorEdu(e);
+    if (e.keyCode === 0 || e.keyCode === 32 || e.keyCode === 190 || e.keyCode === 188 || e.keyCode === 110  || e.keyCode === 46 || e.keyCode === 44) {
+      $("#queryfield").off('keypress');
+      propGeneratorEdu();
+    }
   });
+
 }
 
 // EDU about prop generator
 function propGeneratorEdu(e) {
-  if (e.keyCode === 0 || e.keyCode === 32 || e.keyCode === 190 || e.keyCode === 188 || e.keyCode === 110  || e.keyCode === 46 || e.keyCode === 44) {
-    $("#queryfield").off('keypress');
-    $('#footer3').addClass('hidden');
-    $('#footer4').removeClass('hidden');
-    $('#terms').click(function(){
-      console.log('click');
-      $('.term').off('click');
-      $('#footer4').addClass('hidden');
-      $('#footer5').removeClass('hidden');
-    });
-  }
+  $('#footer3').addClass('hidden');
+  $('#footer4').removeClass('hidden');
+  $('#terms').click(function(){
+    $('.term').off('click');
+    $('#footer4').addClass('hidden');
+    $('#footer5').removeClass('hidden');
+  });
 }
 
 function confirmNew() {
